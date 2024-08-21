@@ -1,0 +1,51 @@
+# Node.js dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# Build outputs
+dist/
+build/
+out/
+
+# Dependency directories
+/.pnp
+.pnp.js
+
+# IDE/Editor directories and files
+.vscode/
+.idea/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Optional npm cache directory
+.npm/
+
+# Optional eslint cache
+.eslintcache
+
+# Parcel-bundler cache (used in some Node.js projects)
+.cache/
+
+# Coverage directory used by testing tools like Jest
+coverage/
+
+# Optional stylelint cache
+.stylelintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Lock files (optional, depends on your workflow)
+package-lock.json
+yarn.lock
