@@ -78,7 +78,7 @@ The [Stellar Disbursement Platform (SDP)](https://github.com/stellar/stellar-dis
 
 StellarPay integrates these powerful features to facilitate a seamless experience.
 
-## Licensing Information
+#### Licensing Information
 The Stellar Disbursement Platform (SDP), is licensed under the Apache License 2.0. A copy of the license can be found in the [License_SDP](./LICENSE_SDP) file included in this repository.
 
 
