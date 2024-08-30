@@ -49,3 +49,6 @@ coverage/
 # Lock files (optional, depends on your workflow)
 package-lock.json
 yarn.lock
+
+# Stellar Disbursement Platform (SDP)
+/stellar-disbursement-platform-backend

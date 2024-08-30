@@ -3,6 +3,8 @@
 ## Table of Contents
 - [Introduction](#introduction)
 - [Architecture](#architecture)
+- [Setup](#setup)
+    - [Stellar Disbursement Platform](#stellar-disbursement-platform)
 
 
 
@@ -68,3 +70,33 @@ It includes:
 - **(Adjusted) SEP-31 Endpoint**: Similar to the Sender System.
 - **Receiver Wallet(s)**: Wallets to receive the funds disbursed by SDP.
 
+## Setup
+To set up the StellarPay Proof of Concept (PoC), there are several distinct components that need to be operational.
+
+### Stellar Disbursement Platform
+The [Stellar Disbursement Platform (SDP)](https://github.com/stellar/stellar-disbursement-platform-backend/blob/develop/README.md) enables organizations to disburse bulk payments to recipients using Stellar.
+
+StellarPay integrates these powerful features to facilitate a seamless experience.
+
+## Licensing Information
+The Stellar Disbursement Platform (SDP), is licensed under the Apache License 2.0. A copy of the license can be found in the [License_SDP](./LICENSE_SDP) file included in this repository.
+
+
+#### Prerequisits
+
+##### Docker
+You need to have [Docker](https://www.docker.com/products/docker-desktop/) installed on your system.
+
+##### Golang
+Ensure that Golang is installed on your system. The Go environment must be properly set up, with `$GOPATH/bin` included in your system's `$PATH`.
+
+#### Quickinstall
+```sh
+chmod +x ./setup-sdp.sh
+./setup-sdp.sh
+```
+
+#### Start SDP independently
+```sh
+./stellar-disbursement-platform-backend/dev/main.sh
+```
