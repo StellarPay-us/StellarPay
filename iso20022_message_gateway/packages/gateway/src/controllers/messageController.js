@@ -7,6 +7,7 @@ exports.receiveMessage = async (req, res) => {
 
   try {
     // Load the XSD file
+     
     const xsdPath = path.join(__dirname, '../../../../../resources/files/definitions', 'pain.001.001.12.xsd');
     const xsdContent = await fs.readFile(xsdPath, 'utf-8');
 

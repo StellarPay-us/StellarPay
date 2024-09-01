@@ -37,6 +37,14 @@ async function validateXML(xmlContent, xsdContent) {
     }
 }
 
+function parseLibxmljsErrors(validationErrors) {
+    return validationErrors.map(error => ({
+        message: error.message,
+        line: error.line,
+        column: error.column
+    }));
+}
+
 module.exports = {
     validateXML
 }
