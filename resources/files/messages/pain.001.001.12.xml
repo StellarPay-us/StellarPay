@@ -1,56 +1,143 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.12">
+    <!-- Root element indicating the document type and namespace -->
     <CstmrCdtTrfInitn>
+        <!-- Group Header: Contains information related to the entire group of transactions -->
         <GrpHdr>
+            <!-- Message Identification: Unique identifier for the message -->
             <MsgId>S-BU-001</MsgId>
+            <!-- Creation Date Time: Timestamp of when the message was created -->
             <CreDtTm>2024-05-04T12:38:00</CreDtTm>
-            <NbOfTxs>1</NbOfTxs>
-            <CtrlSum>1000.00</CtrlSum>
+            <!-- Number of Transactions: Total number of individual transactions included in the message -->
+            <NbOfTxs>2</NbOfTxs>
+            <!-- Control Sum: The sum of all individual amounts in the message, used for validation -->
+            <CtrlSum>2000.00</CtrlSum>
+            <!-- Initiating Party: The entity initiating the payment, usually the payer -->
             <InitgPty>
-                <Nm>Alice</Nm>
+                <!-- Name of the initiating party -->
+                <Nm>Max Musterman</Nm>
+                <!-- Orgrganisation Identifiation of the initiating party -->
+                <Id>
+                    <OrgId>
+                        <Othr>
+                            <Id>123456</Id>
+                        </Othr>
+                    </OrgId>
+                </Id>
             </InitgPty>
         </GrpHdr>
+        
+        <!-- Payment Information: Contains details specific to the payment(s) being made -->
         <PmtInf>
-            <PmtInfId>X-BA-PAY001</PmtInfId>
+            <!-- Payment Information Identification: Unique identifier for the payment information block -->
+            <PmtInfId>X-BA-PAY002</PmtInfId>
+            <!-- Payment Method: Specifies the method of payment, such as transfer (TRF) -->
             <PmtMtd>TRF</PmtMtd>
-            <NbOfTxs>1</NbOfTxs>
-            <CtrlSum>1000.00</CtrlSum>
+            <!-- Number of Transactions: Total number of individual transactions included in this payment block -->
+            <NbOfTxs>2</NbOfTxs>
+            <!-- Control Sum: The sum of all individual amounts in this payment block, used for validation -->
+            <CtrlSum>2000.00</CtrlSum>
+            <!-- Payment Type Information: Contains additional details about the payment type -->
             <PmtTpInf>
+                <!-- Service Level: Specifies the service level, such as NORM for normal priority -->
                 <SvcLvl>
+                    <!-- Code for the service level -->
                     <Cd>NORM</Cd>
                 </SvcLvl>
             </PmtTpInf>
+            <!-- Requested Execution Date: The date and time when the payment is requested to be executed -->
             <ReqdExctnDt>
                 <DtTm>2024-05-04T14:00:00</DtTm>
             </ReqdExctnDt>
+            
+            <!-- Debtor: The party who owes the money, usually the payer -->
             <Dbtr>
-                <Nm>Alice</Nm>
+                <!-- Name of the debtor -->
+                <Nm>Max Musterman</Nm>
             </Dbtr>
+            <!-- Debtor Account: The account from which the money will be debited -->
             <DbtrAcct>
                 <Id>
+                    <!-- IBAN: International Bank Account Number of the debtor's account -->
                     <IBAN>US33XXX1234567890123456789012</IBAN>
                 </Id>
+                <!-- Currency: Currency of the debtor account. Should only be used in case one and the same account number covers several currencies. -->
+                <Ccy>USD</Ccy>
             </DbtrAcct>
+            <!-- Debtor Agent: The financial institution managing the debtor's account -->
             <DbtrAgt>
                 <FinInstnId>
+                    <!-- BICFI: Business Identifier Code for the debtor's financial institution -->
                     <BICFI>BANKUS22</BICFI>
                 </FinInstnId>
-            </DbtrAgt>            
+            </DbtrAgt> 
+            
+            <!-- First Credit Transfer Transaction Information: Contains details of the first specific transaction -->
             <CdtTrfTxInf>
+                <!-- Payment Identification: Unique identifier for the payment transaction -->
                 <PmtId>
-                    <EndToEndId>abc123</EndToEndId>
+                    <!-- End-to-End Identification: Unique reference for the transaction, used for tracking -->
+                    <EndToEndId>batch001</EndToEndId>
                 </PmtId>
+                <!-- Amount: The amount to be transferred -->
                 <Amt>
+                    <!-- Instructed Amount: Specifies the currency and the amount to be transferred -->
                     <InstdAmt Ccy="USD">1000.00</InstdAmt>
                 </Amt>
+                <!-- Exchange Rate Information: Contains details about the exchange rate -->
+                <XchgRateInf>
+                    <!-- Target Currency: Currency in which the rate of exchange is expressed in a currency exchange.  -->
+                    <UnitCcy>EUR</UnitCcy>
+                    <!-- Exchange Rate: The exchange rate applied to convert from the instructed currency to the expected currency -->
+                    <XchgRate>0.90</XchgRate>
+                </XchgRateInf>
+                <!-- Creditor Agent: The financial institution managing the creditor's account -->
                 <CdtrAgt>
                     <FinInstnId>
+                        <!-- BICFI: Business Identifier Code for the creditor's financial institution -->
                         <BICFI>BANKEU11</BICFI>
                     </FinInstnId>
                 </CdtrAgt>
+                <!-- Creditor Account: The account to which the money will be credited -->
                 <CdtrAcct>
                     <Id>
+                        <!-- IBAN: International Bank Account Number of the creditor's account -->
                         <IBAN>DE89370400440532013000</IBAN>
+                    </Id>
+                </CdtrAcct>
+            </CdtTrfTxInf>
+            
+            <!-- Second Credit Transfer Transaction Information: Contains details of the second specific transaction -->
+            <CdtTrfTxInf>
+                <!-- Payment Identification: Unique identifier for the payment transaction -->
+                <PmtId>
+                    <!-- End-to-End Identification: Unique reference for the transaction, used for tracking -->
+                    <EndToEndId>batch002</EndToEndId>
+                </PmtId>
+                <!-- Amount: The amount to be transferred -->
+                <Amt>
+                    <!-- Instructed Amount: Specifies the currency and the amount to be transferred -->
+                    <InstdAmt Ccy="USD">1000.00</InstdAmt>
+                </Amt>
+                <!-- Exchange Rate Information: Contains details about the exchange rate -->
+                <XchgRateInf>
+                    <!-- Target Currency: Currency in which the rate of exchange is expressed in a currency exchange.  -->
+                    <UnitCcy>GBP</UnitCcy>
+                    <!-- Exchange Rate: The exchange rate applied to convert from the instructed currency to the expected currency -->
+                    <XchgRate>0.77</XchgRate>
+                </XchgRateInf>
+                <!-- Creditor Agent: The financial institution managing the creditor's account -->
+                <CdtrAgt>
+                    <FinInstnId>
+                        <!-- BICFI: Business Identifier Code for the creditor's financial institution -->
+                        <BICFI>BANKGB22</BICFI>
+                    </FinInstnId>
+                </CdtrAgt>
+                <!-- Creditor Account: The account to which the money will be credited -->
+                <CdtrAcct>
+                    <Id>
+                        <!-- IBAN: International Bank Account Number of the creditor's account -->
+                        <IBAN>GB29NWBK60161331926819</IBAN>
                     </Id>
                 </CdtrAcct>
             </CdtTrfTxInf>

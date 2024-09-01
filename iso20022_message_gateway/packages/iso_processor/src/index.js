@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const libxmljs = require('libxmljs2');
+const { DOMParser } = require('xmldom');
 const { promisify } = require('util');
 
 const writeFileAsync = promisify(fs.writeFile);
@@ -37,6 +38,112 @@ async function validateXML(xmlContent, xsdContent) {
     }
 }
 
+function parseXML(xmlContent) {
+    function getElementTextContent(element, tagName) {
+        const tag = element.getElementsByTagName(tagName)[0];
+        if (!tag || !tag.textContent) {
+            throw new Error(`Missing or empty <${tagName}> element.`);
+        }
+        return tag.textContent;
+    }
+
+    function getElementTextContentWithAttr(element, tagName, attrName) {
+        const tag = element.getElementsByTagName(tagName)[0];
+        if (!tag || !tag.textContent) {
+            throw new Error(`Missing or empty <${tagName}> element.`);
+        }
+        const attr = tag.getAttribute(attrName);
+        if (!attr) {
+            throw new Error(`Missing or empty attribute "${attrName}" in <${tagName}> element.`);
+        }
+        return { textContent: tag.textContent, attr };
+    }
+
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlContent, "text/xml");
+
+    // Group Header Block
+    const grpHdr = xmlDoc.getElementsByTagName("GrpHdr")[0];
+    if (!grpHdr) throw new Error("Missing <GrpHdr> block.");
+
+    // InitgPty Block
+    const initgPty = grpHdr.getElementsByTagName("InitgPty")[0];
+    if (!initgPty) throw new Error("Missing <InitgPty> block.");
+    
+    const grpHeaderInfo = {
+        msgId: getElementTextContent(grpHdr, "MsgId"),
+        creDtTm: getElementTextContent(grpHdr, "CreDtTm"),
+        nbOfTxs: getElementTextContent(grpHdr, "NbOfTxs"),
+        ctrlSum: getElementTextContent(grpHdr, "CtrlSum"),
+        initgPty: {
+            name: getElementTextContent(initgPty, "Nm"),
+            orgId: getElementTextContent(initgPty, "Id"),
+        }
+    };
+
+    // Payment Information Block
+    const pmtInf = xmlDoc.getElementsByTagName("PmtInf")[0];
+    if (!pmtInf) throw new Error("Missing <PmtInf> block.");
+    const paymentInfo = {
+        pmtInfId: getElementTextContent(pmtInf, "PmtInfId"),
+        pmtMtd: getElementTextContent(pmtInf, "PmtMtd"),
+        nbOfTxs: getElementTextContent(pmtInf, "NbOfTxs"),
+        ctrlSum: getElementTextContent(pmtInf, "CtrlSum"),
+        svcLvl: getElementTextContent(pmtInf.getElementsByTagName("SvcLvl")[0], "Cd"),
+        reqdExctnDt: getElementTextContent(pmtInf, "ReqdExctnDt"),
+        dbtr: {
+            name: getElementTextContent(pmtInf.getElementsByTagName("Dbtr")[0], "Nm"),
+        },
+        dbtrAcct: {
+            iban: getElementTextContent(pmtInf.getElementsByTagName("DbtrAcct")[0], "IBAN"),
+            currency: getElementTextContent(pmtInf.getElementsByTagName("DbtrAcct")[0], "Ccy")
+        },
+        dbtrAgt: {
+            bicfi: getElementTextContent(pmtInf.getElementsByTagName("DbtrAgt")[0], "BICFI")
+        },
+        transactions: []
+    };
+
+    // Transaction Information Blocks
+    const transactions = pmtInf.getElementsByTagName("CdtTrfTxInf");
+    for (let i = 0; i < transactions.length; i++) {
+        const transaction = transactions[i];
+
+        // Ensure that the <Amt> block and the <InstdAmt> element with Ccy attribute exist
+        const instdAmt = getElementTextContentWithAttr(transaction, "InstdAmt", "Ccy");
+
+        // Ensure that the <XchgRateInf> block exists
+        const xchgRateInf = transaction.getElementsByTagName("XchgRateInf")[0];
+        if (!xchgRateInf) {
+            throw new Error("Missing <XchgRateInf> block.");
+        }
+
+        const transactionInfo = {
+            endToEndId: getElementTextContent(transaction.getElementsByTagName("PmtId")[0], "EndToEndId"),
+            instdAmt: {
+                amount: instdAmt.textContent,
+                currency: instdAmt.attr
+            },
+            xchgRateInf: {
+                unitCcy: getElementTextContent(xchgRateInf, "UnitCcy"),
+                xchgRate: getElementTextContent(xchgRateInf, "XchgRate")
+            },
+            cdtrAgt: {
+                bicfi: getElementTextContent(transaction.getElementsByTagName("CdtrAgt")[0], "BICFI")
+            },
+            cdtrAcct: {
+                iban: getElementTextContent(transaction.getElementsByTagName("CdtrAcct")[0], "IBAN")
+            }
+        };
+        paymentInfo.transactions.push(transactionInfo);
+    }
+
+    return {
+        groupHeader: grpHeaderInfo,
+        paymentInformation: paymentInfo
+    };
+}
+
 function parseLibxmljsErrors(validationErrors) {
     return validationErrors.map(error => ({
         message: error.message,
@@ -46,5 +153,6 @@ function parseLibxmljsErrors(validationErrors) {
 }
 
 module.exports = {
-    validateXML
+    validateXML,
+    parseXML
 }
