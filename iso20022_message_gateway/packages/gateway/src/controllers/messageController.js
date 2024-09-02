@@ -6,8 +6,6 @@ exports.receiveMessage = async (req, res) => {
   const xmlContent = req.body;  // Assuming the XML content is sent as a string in the request body
 
   try {
-    // Load the XSD file
-     
     const xsdPath = path.join(__dirname, '../../../../../resources/files/definitions', 'pain.001.001.12.xsd');
     const xsdContent = await fs.readFile(xsdPath, 'utf-8');
 
@@ -21,8 +19,8 @@ exports.receiveMessage = async (req, res) => {
       });
     }
 
-    // Proceed with saving the message or further processing if needed
-    // Save logic here (e.g., save to a database)
+    // TODO parse message (remember error handling)
+    // TODO save message to database
 
     res.status(201).send('Message received and processed');
   } catch (error) {
