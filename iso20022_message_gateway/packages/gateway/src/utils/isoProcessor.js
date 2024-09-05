@@ -1,5 +1,5 @@
-const { validateXML } = require('../../../iso_processor');
+const { validateXML } = require("../../../iso_processor");
 
 module.exports = {
-    validateXML
+  validateXML,
 };
