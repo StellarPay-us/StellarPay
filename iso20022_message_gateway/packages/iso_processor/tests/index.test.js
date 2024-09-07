@@ -53,13 +53,28 @@ describe("XML Processor Library", () => {
 
     const result = parseXML(data);
 
-    expect(result).toHaveProperty("groupHeader");
-    expect(result).toHaveProperty("paymentInformation");
-    expect(result.groupHeader).toHaveProperty("msgId");
-    expect(result.paymentInformation).toHaveProperty("transactions");
-    expect(result.paymentInformation.transactions.length).toBeGreaterThan(0);
+    // Test the "message" object (combination of grpHeader and paymentInfo)
+    expect(result).toHaveProperty("message");
+    expect(result.message).toHaveProperty("msgId");
+    expect(result.message).toHaveProperty("creDtTm");
+    expect(result.message).toHaveProperty("nbOfTxs");
+    expect(result.message).toHaveProperty("ctrlSum");
+    expect(result.message.initgPty).toHaveProperty("name");
+    expect(result.message.initgPty).toHaveProperty("orgId");
+    expect(result.message).toHaveProperty("pmtInfId");
+    expect(result.message).toHaveProperty("pmtMtd");
+    expect(result.message).toHaveProperty("svcLvl");
+    expect(result.message).toHaveProperty("reqdExctnDt");
+    expect(result.message.dbtr).toHaveProperty("name");
+    expect(result.message.dbtrAcct).toHaveProperty("iban");
+    expect(result.message.dbtrAcct).toHaveProperty("currency");
+    expect(result.message.dbtrAgt).toHaveProperty("bicfi");
 
-    const firstTransaction = result.paymentInformation.transactions[0];
+    // Test the "transactions" array
+    expect(result).toHaveProperty("transactions");
+    expect(result.transactions.length).toBeGreaterThan(0);
+
+    const firstTransaction = result.transactions[0];
     expect(firstTransaction).toHaveProperty("endToEndId");
     expect(firstTransaction).toHaveProperty("instdAmt");
     expect(firstTransaction.instdAmt).toHaveProperty("amount");
@@ -75,68 +90,68 @@ describe("XML Processor Library", () => {
 
   test("parseXML should throw an error if any required element or attribute is missing", () => {
     const invalidXmlContent = `
-        <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.12">
-            <CstmrCdtTrfInitn>
-                <GrpHdr>
-                    <MsgId>S-BU-001</MsgId>
-                    <CreDtTm>2024-05-04T12:38:00</CreDtTm>
-                    <NbOfTxs>1</NbOfTxs>
-                    <CtrlSum>1000.00</CtrlSum>
-                    <InitgPty>
-                        <Nm>Max Musterman</Nm>
-                        <Id>123456</Id>
-                    </InitgPty>
-                </GrpHdr>
-                <PmtInf>
-                    <PmtInfId>X-BA-PAY002</PmtInfId>
-                    <PmtMtd>TRF</PmtMtd>
-                    <NbOfTxs>1</NbOfTxs>
-                    <CtrlSum>1000.00</CtrlSum>
-                    <SvcLvl>
-                        <Cd>NORM</Cd>
-                    </SvcLvl>
-                    <ReqdExctnDt>2024-05-04T14:00:00</ReqdExctnDt>
-                    <Dbtr>
-                        <Nm>Max Musterman</Nm>
-                    </Dbtr>
-                    <DbtrAcct>
-                        <Id>
-                            <IBAN>US33XXX1234567890123456789012</IBAN>
-                        </Id>
-                        <Ccy>USD</Ccy>
-                    </DbtrAcct>
-                    <DbtrAgt>
-                        <FinInstnId>
-                            <BICFI>BANKUS22</BICFI>
-                        </FinInstnId>
-                    </DbtrAgt>
-                    <CdtTrfTxInf>
-                        <PmtId>
-                            <EndToEndId>batch001</EndToEndId>
-                        </PmtId>
-                        <Amt>
-                            <!-- Missing Ccy attribute -->
-                            <InstdAmt>1000.00</InstdAmt>
-                        </Amt>
-                        <XchgRateInf>
-                            <UnitCcy>EUR</UnitCcy>
-                            <XchgRate>0.90</XchgRate>
-                        </XchgRateInf>
-                        <CdtrAgt>
-                            <FinInstnId>
-                                <BICFI>BANKEU11</BICFI>
-                            </FinInstnId>
-                        </CdtrAgt>
-                        <CdtrAcct>
-                            <Id>
-                                <IBAN>DE89370400440532013000</IBAN>
-                            </Id>
-                        </CdtrAcct>
-                    </CdtTrfTxInf>
-                </PmtInf>
-            </CstmrCdtTrfInitn>
-        </Document>
-        `;
+      <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.12">
+          <CstmrCdtTrfInitn>
+              <GrpHdr>
+                  <MsgId>S-BU-001</MsgId>
+                  <CreDtTm>2024-05-04T12:38:00</CreDtTm>
+                  <NbOfTxs>1</NbOfTxs>
+                  <CtrlSum>1000.00</CtrlSum>
+                  <InitgPty>
+                      <Nm>Max Musterman</Nm>
+                      <Id>123456</Id>
+                  </InitgPty>
+              </GrpHdr>
+              <PmtInf>
+                  <PmtInfId>X-BA-PAY002</PmtInfId>
+                  <PmtMtd>TRF</PmtMtd>
+                  <NbOfTxs>1</NbOfTxs>
+                  <CtrlSum>1000.00</CtrlSum>
+                  <SvcLvl>
+                      <Cd>NORM</Cd>
+                  </SvcLvl>
+                  <ReqdExctnDt>2024-05-04T14:00:00</ReqdExctnDt>
+                  <Dbtr>
+                      <Nm>Max Musterman</Nm>
+                  </Dbtr>
+                  <DbtrAcct>
+                      <Id>
+                          <IBAN>US33XXX1234567890123456789012</IBAN>
+                      </Id>
+                      <Ccy>USD</Ccy>
+                  </DbtrAcct>
+                  <DbtrAgt>
+                      <FinInstnId>
+                          <BICFI>BANKUS22</BICFI>
+                      </FinInstnId>
+                  </DbtrAgt>
+                  <CdtTrfTxInf>
+                      <PmtId>
+                          <EndToEndId>batch001</EndToEndId>
+                      </PmtId>
+                      <Amt>
+                          <!-- Missing Ccy attribute -->
+                          <InstdAmt>1000.00</InstdAmt>
+                      </Amt>
+                      <XchgRateInf>
+                          <UnitCcy>EUR</UnitCcy>
+                          <XchgRate>0.90</XchgRate>
+                      </XchgRateInf>
+                      <CdtrAgt>
+                          <FinInstnId>
+                              <BICFI>BANKEU11</BICFI>
+                          </FinInstnId>
+                      </CdtrAgt>
+                      <CdtrAcct>
+                          <Id>
+                              <IBAN>DE89370400440532013000</IBAN>
+                          </Id>
+                      </CdtrAcct>
+                  </CdtTrfTxInf>
+              </PmtInf>
+          </CstmrCdtTrfInitn>
+      </Document>
+    `;
 
     expect(() => parseXML(invalidXmlContent)).toThrow(
       'Missing or empty attribute "Ccy" in <InstdAmt> element.',
@@ -145,64 +160,64 @@ describe("XML Processor Library", () => {
 
   test("parseXML should throw an error if the XchgRateInf element is missing", () => {
     const invalidXmlContent = `
-        <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.12">
-            <CstmrCdtTrfInitn>
-                <GrpHdr>
-                    <MsgId>S-BU-001</MsgId>
-                    <CreDtTm>2024-05-04T12:38:00</CreDtTm>
-                    <NbOfTxs>1</NbOfTxs>
-                    <CtrlSum>1000.00</CtrlSum>
-                    <InitgPty>
-                        <Nm>Max Musterman</Nm>
-                        <Id>123456</Id>
-                    </InitgPty>
-                </GrpHdr>
-                <PmtInf>
-                    <PmtInfId>X-BA-PAY002</PmtInfId>
-                    <PmtMtd>TRF</PmtMtd>
-                    <NbOfTxs>1</NbOfTxs>
-                    <CtrlSum>1000.00</CtrlSum>
-                    <SvcLvl>
-                        <Cd>NORM</Cd>
-                    </SvcLvl>
-                    <ReqdExctnDt>2024-05-04T14:00:00</ReqdExctnDt>
-                    <Dbtr>
-                        <Nm>Max Musterman</Nm>
-                    </Dbtr>
-                    <DbtrAcct>
-                        <Id>
-                            <IBAN>US33XXX1234567890123456789012</IBAN>
-                        </Id>
-                        <Ccy>USD</Ccy>
-                    </DbtrAcct>
-                    <DbtrAgt>
-                        <FinInstnId>
-                            <BICFI>BANKUS22</BICFI>
-                        </FinInstnId>
-                    </DbtrAgt>
-                    <CdtTrfTxInf>
-                        <PmtId>
-                            <EndToEndId>batch001</EndToEndId>
-                        </PmtId>
-                        <Amt>
-                            <InstdAmt Ccy="USD">1000.00</InstdAmt>
-                        </Amt>
-                        <!-- Missing XchgRateInf block -->
-                        <CdtrAgt>
-                            <FinInstnId>
-                                <BICFI>BANKEU11</BICFI>
-                            </FinInstnId>
-                        </CdtrAgt>
-                        <CdtrAcct>
-                            <Id>
-                                <IBAN>DE89370400440532013000</IBAN>
-                            </Id>
-                        </CdtrAcct>
-                    </CdtTrfTxInf>
-                </PmtInf>
-            </CstmrCdtTrfInitn>
-        </Document>
-        `;
+      <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.12">
+          <CstmrCdtTrfInitn>
+              <GrpHdr>
+                  <MsgId>S-BU-001</MsgId>
+                  <CreDtTm>2024-05-04T12:38:00</CreDtTm>
+                  <NbOfTxs>1</NbOfTxs>
+                  <CtrlSum>1000.00</CtrlSum>
+                  <InitgPty>
+                      <Nm>Max Musterman</Nm>
+                      <Id>123456</Id>
+                  </InitgPty>
+              </GrpHdr>
+              <PmtInf>
+                  <PmtInfId>X-BA-PAY002</PmtInfId>
+                  <PmtMtd>TRF</PmtMtd>
+                  <NbOfTxs>1</NbOfTxs>
+                  <CtrlSum>1000.00</CtrlSum>
+                  <SvcLvl>
+                      <Cd>NORM</Cd>
+                  </SvcLvl>
+                  <ReqdExctnDt>2024-05-04T14:00:00</ReqdExctnDt>
+                  <Dbtr>
+                      <Nm>Max Musterman</Nm>
+                  </Dbtr>
+                  <DbtrAcct>
+                      <Id>
+                          <IBAN>US33XXX1234567890123456789012</IBAN>
+                      </Id>
+                      <Ccy>USD</Ccy>
+                  </DbtrAcct>
+                  <DbtrAgt>
+                      <FinInstnId>
+                          <BICFI>BANKUS22</BICFI>
+                      </FinInstnId>
+                  </DbtrAgt>
+                  <CdtTrfTxInf>
+                      <PmtId>
+                          <EndToEndId>batch001</EndToEndId>
+                      </PmtId>
+                      <Amt>
+                          <InstdAmt Ccy="USD">1000.00</InstdAmt>
+                      </Amt>
+                      <!-- Missing XchgRateInf block -->
+                      <CdtrAgt>
+                          <FinInstnId>
+                              <BICFI>BANKEU11</BICFI>
+                          </FinInstnId>
+                      </CdtrAgt>
+                      <CdtrAcct>
+                          <Id>
+                              <IBAN>DE89370400440532013000</IBAN>
+                          </Id>
+                      </CdtrAcct>
+                  </CdtTrfTxInf>
+              </PmtInf>
+          </CstmrCdtTrfInitn>
+      </Document>
+    `;
 
     expect(() => parseXML(invalidXmlContent)).toThrow(
       "Missing <XchgRateInf> block.",

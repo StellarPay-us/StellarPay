@@ -72,7 +72,12 @@ function parseXML(xmlContent) {
   const initgPty = grpHdr.getElementsByTagName("InitgPty")[0];
   if (!initgPty) throw new Error("Missing <InitgPty> block.");
 
-  const grpHeaderInfo = {
+  // Payment Information Block
+  const pmtInf = xmlDoc.getElementsByTagName("PmtInf")[0];
+  if (!pmtInf) throw new Error("Missing <PmtInf> block.");
+
+  // Combined message object
+  const message = {
     msgId: getElementTextContent(grpHdr, "MsgId"),
     creDtTm: getElementTextContent(grpHdr, "CreDtTm"),
     nbOfTxs: getElementTextContent(grpHdr, "NbOfTxs"),
@@ -81,16 +86,8 @@ function parseXML(xmlContent) {
       name: getElementTextContent(initgPty, "Nm"),
       orgId: getElementTextContent(initgPty, "Id"),
     },
-  };
-
-  // Payment Information Block
-  const pmtInf = xmlDoc.getElementsByTagName("PmtInf")[0];
-  if (!pmtInf) throw new Error("Missing <PmtInf> block.");
-  const paymentInfo = {
     pmtInfId: getElementTextContent(pmtInf, "PmtInfId"),
     pmtMtd: getElementTextContent(pmtInf, "PmtMtd"),
-    nbOfTxs: getElementTextContent(pmtInf, "NbOfTxs"),
-    ctrlSum: getElementTextContent(pmtInf, "CtrlSum"),
     svcLvl: getElementTextContent(
       pmtInf.getElementsByTagName("SvcLvl")[0],
       "Cd",
@@ -115,13 +112,13 @@ function parseXML(xmlContent) {
         "BICFI",
       ),
     },
-    transactions: [],
   };
 
-  // Transaction Information Blocks
-  const transactions = pmtInf.getElementsByTagName("CdtTrfTxInf");
-  for (let i = 0; i < transactions.length; i++) {
-    const transaction = transactions[i];
+  // Transactions
+  const transactions = [];
+  const transactionElements = pmtInf.getElementsByTagName("CdtTrfTxInf");
+  for (let i = 0; i < transactionElements.length; i++) {
+    const transaction = transactionElements[i];
 
     // Ensure that the <Amt> block and the <InstdAmt> element with Ccy attribute exist
     const instdAmt = getElementTextContentWithAttr(
@@ -162,12 +159,12 @@ function parseXML(xmlContent) {
         ),
       },
     };
-    paymentInfo.transactions.push(transactionInfo);
+    transactions.push(transactionInfo);
   }
 
   return {
-    groupHeader: grpHeaderInfo,
-    paymentInformation: paymentInfo,
+    message,
+    transactions,
   };
 }
 
