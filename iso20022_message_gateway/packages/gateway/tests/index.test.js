@@ -83,14 +83,14 @@ describe("POST /messages", () => {
       error: "Something went wrong",
     });
   });
-
+  
   it("should initialize the database correctly", done => {
     db.serialize(() => {
       db.all(
         `SELECT name FROM sqlite_master WHERE type='table' AND name IN ('messages', 'transactions', 'queue')`,
         (err, rows) => {
           expect(err).toBeNull();
-          expect(rows.length).toBe(3); // Ensure all tables are created
+          expect(rows.length).toBe(3); 
           expect(rows.map(r => r.name)).toEqual(
             expect.arrayContaining(["messages", "transactions", "queue"]),
           );
@@ -99,7 +99,7 @@ describe("POST /messages", () => {
       );
     });
   });
-
+  
   it("should store and retrieve the correct values in the tables", done => {
     const message = {
       msg_id: "123456",
@@ -108,8 +108,16 @@ describe("POST /messages", () => {
       ctrl_sum: 1000.0,
       initg_pty_name: "Test Name",
       initg_pty_org_id: "Test Org ID",
+      pmt_inf_id: "PMT001",
+      pmt_mtd: "TRF",
+      svc_lvl: "SEPA",
+      reqd_exctn_dt: "2024-09-03",
+      dbtr_name: "Debtor Name",
+      dbtr_acct_iban: "US12345678901234567890123456",
+      dbtr_acct_currency: "USD",
+      dbtr_agt_bicfi: "BANKUS33XXX",
     };
-
+  
     const transaction = {
       end_to_end_id: "E2E123",
       instd_amt: 1000.0,
@@ -119,12 +127,12 @@ describe("POST /messages", () => {
       cdtr_agt_bicfi: "BANKUS33XXX",
       cdtr_acct_iban: "US12345678901234567890123456",
     };
-
+  
     db.serialize(() => {
       // Insert a message
       db.run(
-        `INSERT INTO messages (msg_id, cre_dt_tm, nb_of_txs, ctrl_sum, initg_pty_name, initg_pty_org_id) 
-            VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO messages (msg_id, cre_dt_tm, nb_of_txs, ctrl_sum, initg_pty_name, initg_pty_org_id, pmt_inf_id, pmt_mtd, svc_lvl, reqd_exctn_dt, dbtr_name, dbtr_acct_iban, dbtr_acct_currency, dbtr_agt_bicfi) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           message.msg_id,
           message.cre_dt_tm,
@@ -132,16 +140,24 @@ describe("POST /messages", () => {
           message.ctrl_sum,
           message.initg_pty_name,
           message.initg_pty_org_id,
+          message.pmt_inf_id,
+          message.pmt_mtd,
+          message.svc_lvl,
+          message.reqd_exctn_dt,
+          message.dbtr_name,
+          message.dbtr_acct_iban,
+          message.dbtr_acct_currency,
+          message.dbtr_agt_bicfi,
         ],
         function (err) {
           expect(err).toBeNull();
-
+  
           const messageId = this.lastID;
-
+  
           // Insert a transaction associated with the message
           db.run(
             `INSERT INTO transactions (end_to_end_id, instd_amt, instd_amt_currency, xchg_rate_inf_unit_ccy, xchg_rate_inf_xchg_rate, cdtr_agt_bicfi, cdtr_acct_iban, message_id) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
               transaction.end_to_end_id,
               transaction.instd_amt,
@@ -154,14 +170,14 @@ describe("POST /messages", () => {
             ],
             function (err) {
               expect(err).toBeNull();
-
+  
               // Insert a record into the queue associated with the message
               db.run(
                 `INSERT INTO queue (message_id, ready_to_forward) VALUES (?, ?)`,
                 [messageId, 0],
                 function (err) {
                   expect(err).toBeNull();
-
+  
                   // Verify that the message was inserted correctly
                   db.get(
                     `SELECT * FROM messages WHERE msg_id = ?`,
@@ -177,7 +193,17 @@ describe("POST /messages", () => {
                       expect(row.initg_pty_org_id).toBe(
                         message.initg_pty_org_id,
                       );
-
+                      expect(row.pmt_inf_id).toBe(message.pmt_inf_id);
+                      expect(row.pmt_mtd).toBe(message.pmt_mtd);
+                      expect(row.svc_lvl).toBe(message.svc_lvl);
+                      expect(row.reqd_exctn_dt).toBe(message.reqd_exctn_dt);
+                      expect(row.dbtr_name).toBe(message.dbtr_name);
+                      expect(row.dbtr_acct_iban).toBe(message.dbtr_acct_iban);
+                      expect(row.dbtr_acct_currency).toBe(
+                        message.dbtr_acct_currency,
+                      );
+                      expect(row.dbtr_agt_bicfi).toBe(message.dbtr_agt_bicfi);
+  
                       // Verify that the transaction was inserted correctly
                       db.get(
                         `SELECT * FROM transactions WHERE message_id = ?`,
@@ -204,7 +230,7 @@ describe("POST /messages", () => {
                           expect(row.cdtr_acct_iban).toBe(
                             transaction.cdtr_acct_iban,
                           );
-
+  
                           // Verify that the queue record was inserted correctly
                           db.get(
                             `SELECT * FROM queue WHERE message_id = ?`,

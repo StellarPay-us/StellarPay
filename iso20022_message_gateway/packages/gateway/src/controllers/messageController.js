@@ -26,7 +26,8 @@ exports.receiveMessage = async (req, res) => {
       });
     }
 
-    // TODO parse message (remember error handling)
+    // const data = isoProcessor.parseXML(xmlContent);
+
     // TODO save message to database
 
     res.status(201).send("Message received and processed");
