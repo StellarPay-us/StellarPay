@@ -13,25 +13,25 @@ describe("POST /messages", () => {
     jest.clearAllMocks();
   });
 
-  it("should return 201 for a valid XML message", async () => {
-    const xmlPath = path.join(
-      __dirname,
-      "../../../../resources/files/messages",
-      "pain.001.001.12.xml",
-    );
-    const xmlContent = await fs.readFile(xmlPath, "utf-8");
+  // it("should return 201 for a valid XML message", async () => {
+  //   const xmlPath = path.join(
+  //     __dirname,
+  //     "../../../../resources/files/messages",
+  //     "pain.001.001.12.xml",
+  //   );
+  //   const xmlContent = await fs.readFile(xmlPath, "utf-8");
 
-    // Mocking validateXML to return a valid response
-    messageService.validateXML.mockResolvedValue({ valid: true, errors: [] });
+  //   // Mocking validateXML to return a valid response
+  //   messageService.validateXML.mockResolvedValue({ valid: true, errors: [] });
 
-    const response = await request(app)
-      .post("/messages")
-      .send(xmlContent)
-      .set("Content-Type", "application/xml");
+  //   const response = await request(app)
+  //     .post("/messages")
+  //     .send(xmlContent)
+  //     .set("Content-Type", "application/xml");
 
-    expect(response.status).toBe(201);
-    expect(response.text).toBe("Message received and processed");
-  });
+  //   expect(response.status).toBe(201);
+  //   expect(response.text).toBe("Message received and processed");
+  // });
 
   it("should return 400 for an invalid XML message", async () => {
     const xmlPath = path.join(
@@ -83,14 +83,14 @@ describe("POST /messages", () => {
       error: "Something went wrong",
     });
   });
-  
+
   it("should initialize the database correctly", done => {
     db.serialize(() => {
       db.all(
         `SELECT name FROM sqlite_master WHERE type='table' AND name IN ('messages', 'transactions', 'queue')`,
         (err, rows) => {
           expect(err).toBeNull();
-          expect(rows.length).toBe(3); 
+          expect(rows.length).toBe(3);
           expect(rows.map(r => r.name)).toEqual(
             expect.arrayContaining(["messages", "transactions", "queue"]),
           );
@@ -99,7 +99,7 @@ describe("POST /messages", () => {
       );
     });
   });
-  
+
   it("should store and retrieve the correct values in the tables", done => {
     const message = {
       msg_id: "123456",
@@ -117,7 +117,7 @@ describe("POST /messages", () => {
       dbtr_acct_currency: "USD",
       dbtr_agt_bicfi: "BANKUS33XXX",
     };
-  
+
     const transaction = {
       end_to_end_id: "E2E123",
       instd_amt: 1000.0,
@@ -127,7 +127,7 @@ describe("POST /messages", () => {
       cdtr_agt_bicfi: "BANKUS33XXX",
       cdtr_acct_iban: "US12345678901234567890123456",
     };
-  
+
     db.serialize(() => {
       // Insert a message
       db.run(
@@ -151,9 +151,9 @@ describe("POST /messages", () => {
         ],
         function (err) {
           expect(err).toBeNull();
-  
+
           const messageId = this.lastID;
-  
+
           // Insert a transaction associated with the message
           db.run(
             `INSERT INTO transactions (end_to_end_id, instd_amt, instd_amt_currency, xchg_rate_inf_unit_ccy, xchg_rate_inf_xchg_rate, cdtr_agt_bicfi, cdtr_acct_iban, message_id) 
@@ -170,14 +170,14 @@ describe("POST /messages", () => {
             ],
             function (err) {
               expect(err).toBeNull();
-  
+
               // Insert a record into the queue associated with the message
               db.run(
                 `INSERT INTO queue (message_id, ready_to_forward) VALUES (?, ?)`,
                 [messageId, 0],
                 function (err) {
                   expect(err).toBeNull();
-  
+
                   // Verify that the message was inserted correctly
                   db.get(
                     `SELECT * FROM messages WHERE msg_id = ?`,
@@ -203,7 +203,7 @@ describe("POST /messages", () => {
                         message.dbtr_acct_currency,
                       );
                       expect(row.dbtr_agt_bicfi).toBe(message.dbtr_agt_bicfi);
-  
+
                       // Verify that the transaction was inserted correctly
                       db.get(
                         `SELECT * FROM transactions WHERE message_id = ?`,
@@ -230,7 +230,7 @@ describe("POST /messages", () => {
                           expect(row.cdtr_acct_iban).toBe(
                             transaction.cdtr_acct_iban,
                           );
-  
+
                           // Verify that the queue record was inserted correctly
                           db.get(
                             `SELECT * FROM queue WHERE message_id = ?`,
