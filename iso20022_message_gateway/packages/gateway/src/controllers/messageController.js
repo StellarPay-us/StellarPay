@@ -1,10 +1,13 @@
 const path = require("path");
 const fs = require("fs").promises;
+const xml2js = require("xml2js");
 const isoProcessor = require("../services/isoProcessor");
 const db = require("../utils/database");
 
 exports.receiveMessage = async (req, res) => {
-  const xmlContent = req.body;
+  // Parse the incoming XML object to a string
+  const builder = new xml2js.Builder();
+  const xmlContent = builder.buildObject(req.body);
 
   try {
     const xsdPath = path.join(
