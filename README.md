@@ -2,16 +2,58 @@
 
 ## Introduction
 
+Micropayments are a [rapidly growing sector](https://www.statista.com/outlook/dmo/fintech/digital-payments/worldwide) of online payments. However traditional transaction rails, such as credit cards, incur high fees that make micropayment transactions impractical.
+
+A Blockchain based micropayment solution can reduce these costs by bundling transactions together and disburse them efficiently. Paired with an increasing number of global crypto users, a blockchain based solution for micropayments offers multiple advantages such as:
+- Scalability
+- Cost effectiveness
+- Improved user experience
+- Seembless x-border transactions
+
 StellarPay is a cutting-edge micropayment processor built on the Stellar network, designed to efficiently handle large volumes of small transactions. 
 As traditional payment systems struggle with the high costs and inefficiencies of processing micropayments, StellarPay offers a scalable solution that converts ISO20022 messages into Stellar's SEP-31 format, enabling seamless asset swaps and cost-effective disbursements. 
 This platform leverages Stellar's decentralized exchange (SDEX) and disbursement capabilities to provide a robust and compliant solution for businesses navigating the digital economy.
 
-In this document, you'll find everything needed to get started with StellarPay. 
-It covers the system's architecture, setup instructions, and API details. 
-You’ll also find testing procedures (TBD) and benchmarking metrics (TBD) to help you optimize performance. 
-
 ## Setup
 To set up the StellarPay Proof of Concept (PoC), there are several distinct components that need to be operational.
+
+### ISO20022 Message Gateway
+#### Install dependencies
+```sh
+cd iso20022_message_gateway
+pnpm install
+```
+#### Start ISO20022 Message Gateway
+```sh
+cd iso20022_message_gateway/packages/gateway
+pnpm start
+```
+
+#### Test Setup
+```sh
+cd iso20022_message_gateway/packages
+cd gateway
+pnpm jest test
+cd ..
+cd iso_processor
+pnpm jest test
+cd ..
+cd sep_converter
+pnpm jest test
+```
+
+#### Formatting
+##### Prettier
+```sh
+cd iso20022_message_gateway
+pnpm prettier
+```
+
+##### ESlint
+```sh
+cd iso20022_message_gateway
+pnpm lint --fix
+```
 
 ### Stellar Disbursement Platform
 The [Stellar Disbursement Platform (SDP)](https://github.com/stellar/stellar-disbursement-platform-backend/blob/develop/README.md) enables organizations to disburse bulk payments to recipients using Stellar.
