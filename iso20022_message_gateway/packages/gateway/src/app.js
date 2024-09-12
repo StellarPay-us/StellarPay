@@ -14,12 +14,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Add XML parsing middleware
-app.use(bodyParser.xml({
-  limit: "1MB",   
-  xmlParseOptions: {
-    explicitArray: false,   
-  }
-}));
+app.use(
+  bodyParser.xml({
+    limit: "1MB",
+    xmlParseOptions: {
+      explicitArray: false,
+    },
+  }),
+);
 
 // Routes
 const messageRoutes = require("./routes/messages");
@@ -28,7 +30,7 @@ app.use("/messages", messageRoutes);
 app.use((err, req, res, next) => {
   console.error(`Error: ${err.stack}`);
   res.status(500).send("Something went wrong!");
-  next(); 
+  next();
 });
 
 module.exports = app;
