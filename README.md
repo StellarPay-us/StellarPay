@@ -17,6 +17,44 @@ This platform leverages Stellar's decentralized exchange (SDEX) and disbursement
 ## Setup
 To set up the StellarPay Proof of Concept (PoC), there are several distinct components that need to be operational.
 
+### ISO20022 Message Gateway
+#### Install dependencies
+```sh
+cd iso20022_message_gateway
+pnpm install
+```
+#### Start ISO20022 Message Gateway
+```sh
+cd iso20022_message_gateway/packages/gateway
+pnpm start
+```
+
+#### Test Setup
+```sh
+cd iso20022_message_gateway/packages
+cd gateway
+pnpm jest test
+cd ..
+cd iso_processor
+pnpm jest test
+cd ..
+cd sep_converter
+pnpm jest test
+```
+
+#### Formatting
+##### Prettier
+```sh
+cd iso20022_message_gateway
+pnpm prettier
+```
+
+##### ESlint
+```sh
+cd iso20022_message_gateway
+pnpm lint --fix
+```
+
 ### Stellar Disbursement Platform
 The [Stellar Disbursement Platform (SDP)](https://github.com/stellar/stellar-disbursement-platform-backend/blob/develop/README.md) enables organizations to disburse bulk payments to recipients using Stellar.
 
