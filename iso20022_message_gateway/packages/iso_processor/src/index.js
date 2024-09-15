@@ -8,20 +8,31 @@ const { promisify } = require("util");
 const writeFileAsync = promisify(fs.writeFile);
 const unlinkAsync = promisify(fs.unlink);
 
+/**
+ * Validates an XML document against a provided XSD schema.
+ * Temporarily writes the XML and XSD content to files for validation.
+ *
+ * @param {string} xmlContent - The XML document content.
+ * @param {string} xsdContent - The XSD schema content.
+ * @returns {Promise<Object>} - Returns an object with validation status and errors.
+ */
 async function validateXML(xmlContent, xsdContent) {
   const tempDir = os.tmpdir();
 
-  // Create temporary files for the XML and XSD content
+  // Create temporary file paths for the XML and XSD content
   const xmlPath = path.join(tempDir, "temp.xml");
   const xsdPath = path.join(tempDir, "temp.xsd");
 
+  // Write XML and XSD to temporary files
   await writeFileAsync(xmlPath, xmlContent);
   await writeFileAsync(xsdPath, xsdContent);
 
   try {
+    // Parse the XML and XSD documents using libxmljs
     const xmlDoc = libxmljs.parseXml(xmlContent);
     const xsdDoc = libxmljs.parseXml(xsdContent);
 
+    // Validate XML against the XSD
     const isValid = xmlDoc.validate(xsdDoc);
     if (isValid) {
       return { valid: true, errors: [] };
@@ -38,7 +49,17 @@ async function validateXML(xmlContent, xsdContent) {
   }
 }
 
+/**
+ * Parses XML content and extracts relevant information from predefined blocks.
+ *
+ * @param {string} xmlContent - The XML content to parse.
+ * @returns {Object} - Returns a parsed message object and transactions array.
+ */
 function parseXML(xmlContent) {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlContent, "text/xml");
+
+  // Helper function to extract text content from a tag
   function getElementTextContent(element, tagName) {
     const tag = element.getElementsByTagName(tagName)[0];
     if (!tag || !tag.textContent) {
@@ -47,6 +68,7 @@ function parseXML(xmlContent) {
     return tag.textContent;
   }
 
+  // Helper function to extract text content and an attribute from a tag
   function getElementTextContentWithAttr(element, tagName, attrName) {
     const tag = element.getElementsByTagName(tagName)[0];
     if (!tag || !tag.textContent) {
@@ -61,22 +83,19 @@ function parseXML(xmlContent) {
     return { textContent: tag.textContent, attr };
   }
 
-  const parser = new DOMParser();
-  const xmlDoc = parser.parseFromString(xmlContent, "text/xml");
-
-  // Group Header Block
+  // Parsing <GrpHdr> block
   const grpHdr = xmlDoc.getElementsByTagName("GrpHdr")[0];
   if (!grpHdr) throw new Error("Missing <GrpHdr> block.");
 
-  // InitgPty Block
+  // Parsing <InitgPty> block
   const initgPty = grpHdr.getElementsByTagName("InitgPty")[0];
   if (!initgPty) throw new Error("Missing <InitgPty> block.");
 
-  // Payment Information Block
+  // Parsing <PmtInf> block
   const pmtInf = xmlDoc.getElementsByTagName("PmtInf")[0];
   if (!pmtInf) throw new Error("Missing <PmtInf> block.");
 
-  // Combined message object
+  // Creating message object with parsed data
   const message = {
     msgId: getElementTextContent(grpHdr, "MsgId"),
     creDtTm: getElementTextContent(grpHdr, "CreDtTm"),
@@ -114,25 +133,26 @@ function parseXML(xmlContent) {
     },
   };
 
-  // Transactions
+  // Parsing transactions in <CdtTrfTxInf> elements
   const transactions = [];
   const transactionElements = pmtInf.getElementsByTagName("CdtTrfTxInf");
   for (let i = 0; i < transactionElements.length; i++) {
     const transaction = transactionElements[i];
 
-    // Ensure that the <Amt> block and the <InstdAmt> element with Ccy attribute exist
+    // Extract amount and currency from <InstdAmt> with attribute Ccy
     const instdAmt = getElementTextContentWithAttr(
       transaction,
       "InstdAmt",
       "Ccy",
     );
 
-    // Ensure that the <XchgRateInf> block exists
+    // Extract exchange rate information from <XchgRateInf>
     const xchgRateInf = transaction.getElementsByTagName("XchgRateInf")[0];
     if (!xchgRateInf) {
       throw new Error("Missing <XchgRateInf> block.");
     }
 
+    // Creating transaction object
     const transactionInfo = {
       endToEndId: getElementTextContent(
         transaction.getElementsByTagName("PmtId")[0],
@@ -159,6 +179,8 @@ function parseXML(xmlContent) {
         ),
       },
     };
+
+    // Add transaction to the transactions array
     transactions.push(transactionInfo);
   }
 
@@ -168,6 +190,12 @@ function parseXML(xmlContent) {
   };
 }
 
+/**
+ * Parses libxmljs validation errors and returns them in a structured format.
+ *
+ * @param {Array} validationErrors - List of libxmljs validation errors.
+ * @returns {Array<Object>} - Returns a list of parsed error objects.
+ */
 function parseLibxmljsErrors(validationErrors) {
   return validationErrors.map(error => ({
     message: error.message,
