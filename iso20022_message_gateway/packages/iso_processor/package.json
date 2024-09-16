@@ -27,6 +27,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@xmldom/xmldom": "~0.8.4"
+    "@xmldom/xmldom": "~0.8.10"
   }
 }
