@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const os = require("os");
 const libxmljs = require("libxmljs2");
-const { DOMParser } = require("xmldom");
+const { DOMParser } = require("@xmldom/xmldom");
 const { promisify } = require("util");
 
 const writeFileAsync = promisify(fs.writeFile);
