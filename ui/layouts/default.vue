@@ -1,8 +1,10 @@
 <template>
-  <div>
+  <v-app>
     <TopNavbar />
-    <main>
-      <slot />
-    </main>
-  </div>
+    <v-main>
+      <v-container class="py-6">
+        <slot />
+      </v-container>
+    </v-main>
+  </v-app>
 </template>

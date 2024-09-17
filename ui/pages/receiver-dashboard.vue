@@ -1,19 +1,36 @@
 <template>
-  <div class="p-6 space-y-4">
-    <h1 class="text-3xl font-bold mb-4">Receiver Dashboard</h1>
+  <v-container class="py-6">
+    <v-row>
+      <v-col>
+        <v-card class="pa-6" outlined>
+          <v-card-title class="text-h5 font-weight-bold"
+            >Receiver Dashboard</v-card-title
+          >
+          <v-card-subtitle class="mb-4">Received Currencies</v-card-subtitle>
 
-    <div class="bg-white shadow-md rounded-lg p-6">
-      <h2 class="text-2xl font-semibold mb-4">Received Currencies</h2>
-      <div class="space-y-4">
-        <div class="bg-gray-100 p-4 rounded-lg">
-          <h3 class="text-lg font-semibold">USD</h3>
-          <p class="text-4xl font-bold">500</p>
-        </div>
-        <div class="bg-gray-100 p-4 rounded-lg">
-          <h3 class="text-lg font-semibold">EUR</h3>
-          <p class="text-4xl font-bold">300</p>
-        </div>
-      </div>
-    </div>
-  </div>
+          <v-row class="gy-4">
+            <!-- USD Currency Card -->
+            <v-col cols="12" sm="6">
+              <v-card class="pa-4" outlined>
+                <v-card-title class="text-h6">USD</v-card-title>
+                <v-card-subtitle class="text-h4 font-weight-bold"
+                  >500</v-card-subtitle
+                >
+              </v-card>
+            </v-col>
+
+            <!-- EUR Currency Card -->
+            <v-col cols="12" sm="6">
+              <v-card class="pa-4" outlined>
+                <v-card-title class="text-h6">EUR</v-card-title>
+                <v-card-subtitle class="text-h4 font-weight-bold"
+                  >300</v-card-subtitle
+                >
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>

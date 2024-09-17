@@ -1,28 +1,51 @@
 <template>
-  <div class="p-6 space-y-4">
-    <h1 class="text-3xl font-bold mb-4">Sender Dashboard</h1>
+  <v-container class="py-6">
+    <v-row>
+      <v-col>
+        <!-- Transfer Statistics Card -->
+        <v-card class="pa-6" outlined>
+          <v-card-title class="text-h5 font-weight-bold"
+            >Sender Dashboard</v-card-title
+          >
+          <v-card-subtitle class="mb-4">Transfer Statistics</v-card-subtitle>
 
-    <!-- Transfer statistics card -->
-    <div class="bg-white shadow-md rounded-lg p-6">
-      <h2 class="text-2xl font-semibold mb-4">Transfer Statistics</h2>
-      <div class="grid grid-cols-2 gap-4">
-        <div class="bg-gray-100 p-4 rounded-lg text-center">
-          <h3 class="text-lg font-semibold">Past Transfers</h3>
-          <p class="text-4xl font-bold">12</p>
-        </div>
-        <div class="bg-gray-100 p-4 rounded-lg text-center">
-          <h3 class="text-lg font-semibold">Current Transfers</h3>
-          <p class="text-4xl font-bold">3</p>
-        </div>
-      </div>
-    </div>
+          <v-row class="gy-4">
+            <!-- Past Transfers -->
+            <v-col cols="12" sm="6">
+              <v-card class="pa-4" outlined>
+                <v-card-title class="text-h6">Past Transfers</v-card-title>
+                <v-card-subtitle class="text-h4 font-weight-bold text-center"
+                  >12</v-card-subtitle
+                >
+              </v-card>
+            </v-col>
 
-    <!-- New transfer option -->
-    <div class="bg-white shadow-md rounded-lg p-6">
-      <h2 class="text-2xl font-semibold mb-4">Initiate New Transfer</h2>
-      <button class="bg-blue-600 text-white py-2 px-4 rounded-lg">
-        New Transfer
-      </button>
-    </div>
-  </div>
+            <!-- Current Transfers -->
+            <v-col cols="12" sm="6">
+              <v-card class="pa-4" outlined>
+                <v-card-title class="text-h6">Current Transfers</v-card-title>
+                <v-card-subtitle class="text-h4 font-weight-bold text-center"
+                  >3</v-card-subtitle
+                >
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row class="mt-6">
+      <v-col>
+        <!-- New Transfer Option -->
+        <v-card class="pa-6" outlined>
+          <v-card-title class="text-h5 font-weight-bold"
+            >Initiate New Transfer</v-card-title
+          >
+          <v-card-actions>
+            <v-btn color="primary" class="white--text"> New Transfer </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
