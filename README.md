@@ -19,18 +19,18 @@ To set up the StellarPay Proof of Concept (PoC), there are several distinct comp
 
 ### ISO20022 Message Gateway
 #### Install dependencies
-```sh
+```bash
 cd iso20022_message_gateway
 pnpm install
 ```
 #### Start ISO20022 Message Gateway
-```sh
+```bash
 cd iso20022_message_gateway/packages/gateway
 pnpm start
 ```
 
 #### Test Setup
-```sh
+```bash
 cd iso20022_message_gateway/packages
 cd gateway
 pnpm jest test
@@ -44,13 +44,13 @@ pnpm jest test
 
 #### Formatting
 ##### Prettier
-```sh
+```bash
 cd iso20022_message_gateway
 pnpm prettier
 ```
 
 ##### ESlint
-```sh
+```bash
 cd iso20022_message_gateway
 pnpm lint --fix
 ```
@@ -73,12 +73,28 @@ You need to have [Docker](https://www.docker.com/products/docker-desktop/) insta
 Ensure that Golang is installed on your system. The Go environment must be properly set up, with `$GOPATH/bin` included in your system's `$PATH`.
 
 #### Quickinstall
-```sh
+```bash
 chmod +x ./setup-sdp.sh
 ./setup-sdp.sh
 ```
 
 #### Start SDP independently
-```sh
+```bash
 ./stellar-disbursement-platform-backend/dev/main.sh
+```
+
+### UI
+The UI for StellarPay. 
+It enables the Sender to view the status of their transactions, to manually send new transactions or get an API key to connect with the ISO20022 Message Gateway.
+
+#### Setup
+```bash
+cd /ui
+pnpm install
+```
+#### Development Server
+
+Start the development server on `http://localhost:3000`:
+```bash
+pnpm dev
 ```
