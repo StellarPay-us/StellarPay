@@ -15,7 +15,6 @@ As traditional payment systems struggle with the high costs and inefficiencies o
 This platform leverages Stellar's decentralized exchange (SDEX) and disbursement capabilities to provide a robust and compliant solution for businesses navigating the digital economy.
 
 ## Setup
-To set up the StellarPay Proof of Concept (PoC), there are several distinct components that need to be operational.
 
 ### ISO20022 Message Gateway
 #### Install dependencies
