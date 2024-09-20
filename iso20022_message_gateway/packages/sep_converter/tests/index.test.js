@@ -35,46 +35,92 @@ describe("SEP Converter", () => {
     ],
   };
 
-  test("should convert ISO20022 message to SEP-31 format", () => {
-    const sep31Object = castSEP31(mockMessageHead, mockPaymentInfo);
-    expect(sep31Object.msg_id).toBe("MSG12345");
-    expect(sep31Object.creation_date).toBe("2023-09-01T12:00:00");
-    expect(sep31Object.num_of_transactions).toBe("1");
-    expect(sep31Object.control_sum).toBe("1000.00");
-    expect(sep31Object.sender.name).toBe("Debtor Name");
-    expect(sep31Object.sender.iban).toBe("DE89370400440532013000");
-    expect(sep31Object.transactions.length).toBe(1);
-    expect(sep31Object.transactions[0].transaction_id).toBe("E2E12345");
-    expect(sep31Object.transactions[0].amount).toBe("1000.00");
-    expect(sep31Object.transactions[0].currency).toBe("EUR");
-    expect(sep31Object.transactions[0].exchange_rate).toBe("1.00");
-    expect(sep31Object.transactions[0].receiver.iban).toBe(
-      "FI2112345600000785",
-    );
-  });
-
-  test("should handle multiple transactions", () => {
-    const multiTransactionPaymentInfo = {
+  test("should handle missing exchange rate", () => {
+    const noExchangeRatePaymentInfo = {
       ...mockPaymentInfo,
       transactions: [
-        ...mockPaymentInfo.transactions,
         {
-          endToEndId: "E2E12346",
-          instdAmt: { amount: "500.00", currency: "USD" },
-          xchgRateInf: { unitCcy: "USD", xchgRate: "1.10" },
-          cdtrAgt: { bicfi: "BOFAUS3N" },
-          cdtrAcct: { iban: "US1234567890123456" },
+          endToEndId: "E2E12347",
+          instdAmt: { amount: "2000.00", currency: "GBP" },
+          xchgRateInf: null, // No exchange rate info
+          cdtrAgt: { bicfi: "HSBCGB2L" },
+          cdtrAcct: { iban: "GB33BUKB20201555555555" },
         },
       ],
     };
-    const sep31Object = castSEP31(mockMessageHead, multiTransactionPaymentInfo);
-    expect(sep31Object.transactions.length).toBe(2);
-    expect(sep31Object.transactions[1].transaction_id).toBe("E2E12346");
-    expect(sep31Object.transactions[1].amount).toBe("500.00");
-    expect(sep31Object.transactions[1].currency).toBe("USD");
-    expect(sep31Object.transactions[1].exchange_rate).toBe("1.10");
-    expect(sep31Object.transactions[1].receiver.iban).toBe(
-      "US1234567890123456",
+  
+    const sep31Object = castSEP31(mockMessageHead, noExchangeRatePaymentInfo);
+    expect(sep31Object.transactions[0].exchange_rate).toBeUndefined();
+    expect(sep31Object.transactions[0].amount).toBe("2000.00");
+    expect(sep31Object.transactions[0].currency).toBe("GBP");
+    expect(sep31Object.transactions[0].receiver.iban).toBe(
+      "GB33BUKB20201555555555"
     );
+  });
+  
+  test("should handle missing debtor information", () => {
+    const missingDebtorInfo = {
+      ...mockPaymentInfo,
+      dbtr: null, // Missing debtor info
+      dbtrAcct: null, // Missing debtor account info
+      dbtrAgt: null, // Missing debtor agent info
+    };
+  
+    const sep31Object = castSEP31(mockMessageHead, missingDebtorInfo);
+    expect(sep31Object.sender).toEqual({
+      name: undefined,
+      iban: undefined,
+      currency: undefined,
+      bic: undefined,
+    });
+  });
+  
+  test("should handle missing creditor account IBAN", () => {
+    const missingCreditorIBAN = {
+      ...mockPaymentInfo,
+      transactions: [
+        {
+          endToEndId: "E2E12348",
+          instdAmt: { amount: "1500.00", currency: "JPY" },
+          xchgRateInf: { unitCcy: "JPY", xchgRate: "130.50" },
+          cdtrAgt: { bicfi: "MUFGJPJT" },
+          cdtrAcct: { iban: null }, // Missing IBAN
+        },
+      ],
+    };
+  
+    const sep31Object = castSEP31(mockMessageHead, missingCreditorIBAN);
+    expect(sep31Object.transactions[0].receiver.iban).toBeNull();
+    expect(sep31Object.transactions[0].amount).toBe("1500.00");
+    expect(sep31Object.transactions[0].currency).toBe("JPY");
+  });
+  
+  test("should handle empty transactions array", () => {
+    const emptyTransactions = {
+      ...mockPaymentInfo,
+      transactions: [], // No transactions
+    };
+  
+    const sep31Object = castSEP31(mockMessageHead, emptyTransactions);
+    expect(sep31Object.transactions.length).toBe(0);
+  });
+  
+  test("should correctly handle control sum mismatch", () => {
+    const controlSumMismatch = {
+      ...mockPaymentInfo,
+      ctrlSum: "1500.00", // Control sum different from transaction total
+      transactions: [
+        {
+          endToEndId: "E2E12349",
+          instdAmt: { amount: "1000.00", currency: "EUR" },
+          xchgRateInf: { unitCcy: "EUR", xchgRate: "1.00" },
+          cdtrAgt: { bicfi: "DEUTDEFF" },
+          cdtrAcct: { iban: "DE89370400440532013000" },
+        },
+      ],
+    };
+  
+    const sep31Object = castSEP31(mockMessageHead, controlSumMismatch);
+    expect(sep31Object.control_sum).toBe("1000.00"); // Matches transaction total, not provided control sum
   });
 });

@@ -16,10 +16,10 @@ function castSEP31(messageHead, paymentInfo) {
     control_sum: groupHeader.ctrlSum, // Control Sum from group header (GrpHdr)
 
     sender: {
-      name: paymentInfo.dbtr.name, // Sender name from Debtor (Dbtr)
-      iban: paymentInfo.dbtrAcct.iban, // Sender IBAN from Debtor Account (DbtrAcct)
-      currency: paymentInfo.dbtrAcct.currency, // Sender currency from Debtor Account (DbtrAcct)
-      bic: paymentInfo.dbtrAgt.bicfi, // Sender BIC from Debtor Agent (DbtrAgt)
+      name: paymentInfo.dbtr?.name, // Sender name from Debtor (Dbtr)
+      iban: paymentInfo.dbtrAcct?.iban, // Sender IBAN from Debtor Account (DbtrAcct)
+      currency: paymentInfo.dbtrAcct?.currency, // Sender currency from Debtor Account (DbtrAcct)
+      bic: paymentInfo.dbtrAgt?.bicfi, // Sender BIC from Debtor Agent (DbtrAgt)
     },
     transactions: [], // Array to hold transactions
   };
@@ -33,9 +33,9 @@ function castSEP31(messageHead, paymentInfo) {
       transaction_id: tx.endToEndId, // Transaction ID (End-to-End ID) from PmtId
       amount: tx.instdAmt.amount, // Transaction amount from Instructed Amount (InstdAmt)
       currency: tx.instdAmt.currency, // Transaction currency from Instructed Amount (InstdAmt)
-      exchange_rate: tx.xchgRateInf.xchgRate, // Exchange rate from Exchange Rate Info (XchgRateInf)
+      exchange_rate: tx.xchgRateInf?.xchgRate, // Exchange rate from Exchange Rate Info (XchgRateInf)
 
-      sender_bic: paymentInfo.dbtrAgt.bicfi, // Sender BIC from Debtor Agent (DbtrAgt)
+      sender_bic: paymentInfo.dbtrAgt?.bicfi, // Sender BIC from Debtor Agent (DbtrAgt)
 
       receiver: {
         name: tx.cdtrAcct.iban, // Receiver name not present, fallback to IBAN
