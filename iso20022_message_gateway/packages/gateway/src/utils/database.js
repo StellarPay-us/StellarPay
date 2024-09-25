@@ -1,9 +1,43 @@
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database(":memory:");
 
-db.serialize(() => {
+const connectDB = DB_PATH => {
+  const dbPath = DB_PATH || ":memory:";
+  return new sqlite3.Database(dbPath, err => {
+    if (err) {
+      console.error(`Error connecting to SQLite database: ${err.message}`);
+    } else {
+      console.log("Successfully connected to the SQLite database.");
+    }
+  });
+};
+
+const initializeDB = db => {
+  db.run(`PRAGMA foreign_keys = ON`, err => {
+    if (err) {
+      console.error(`Error enabling foreign keys: ${err.message}`);
+    }
+  });
+
+  // Queue table to track whether a message is ready to be forwarded
+  db.run(
+    `CREATE TABLE IF NOT EXISTS queue (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        msg_id TEXT UNIQUE NOT NULL,
+        ready_to_forward INTEGER DEFAULT 0
+    )`,
+    err => {
+      if (err) {
+        console.error(`Error creating queue table: ${err.message}`);
+      } else {
+        console.log("Queue table created or already exists.");
+      }
+    },
+  );
+
   // Create the messages table to reflect combined message and payment information
-  db.run(`CREATE TABLE IF NOT EXISTS messages (
+  db.run(
+    `CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         msg_id TEXT UNIQUE NOT NULL,
         cre_dt_tm TEXT NOT NULL,
@@ -18,11 +52,22 @@ db.serialize(() => {
         dbtr_name TEXT NOT NULL,
         dbtr_acct_iban TEXT NOT NULL,
         dbtr_acct_currency TEXT NOT NULL,
-        dbtr_agt_bicfi TEXT NOT NULL
-    )`);
+        dbtr_agt_bicfi TEXT NOT NULL,
+        queue_id INTEGER NOT NULL,
+        FOREIGN KEY (queue_id) REFERENCES queue(id) ON DELETE CASCADE
+    )`,
+    err => {
+      if (err) {
+        console.error(`Error creating messages table: ${err.message}`);
+      } else {
+        console.log("Messages table created or already exists.");
+      }
+    },
+  );
 
   // Create the transactions table to store the transactions related to a message
-  db.run(`CREATE TABLE IF NOT EXISTS transactions (
+  db.run(
+    `CREATE TABLE IF NOT EXISTS transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         end_to_end_id TEXT NOT NULL,
         instd_amt REAL NOT NULL,
@@ -31,17 +76,21 @@ db.serialize(() => {
         xchg_rate_inf_xchg_rate REAL NOT NULL,
         cdtr_agt_bicfi TEXT NOT NULL,
         cdtr_acct_iban TEXT NOT NULL,
-        message_id INTEGER NOT NULL,
-        FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE
-    )`);
+        msg_id TEXT NOT NULL,
+        queue_id INTEGER NOT NULL,
+        FOREIGN KEY (queue_id) REFERENCES queue(id) ON DELETE CASCADE
+    )`,
+    err => {
+      if (err) {
+        console.error(`Error creating transactions table: ${err.message}`);
+      } else {
+        console.log("Transactions table created or already exists.");
+      }
+    },
+  );
+};
 
-  // Queue table to track whether a message is ready to be forwarded
-  db.run(`CREATE TABLE IF NOT EXISTS queue (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        message_id INTEGER NOT NULL,
-        ready_to_forward INTEGER DEFAULT 0,
-        FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE
-    )`);
-});
-
-module.exports = db;
+module.exports = {
+  connectDB,
+  initializeDB,
+};

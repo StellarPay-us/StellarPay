@@ -1,0 +1,27 @@
+{
+    "message": {
+        "msg_id": "123456",
+        "cre_dt_tm": "2024-09-02T00:00:00Z",
+        "nb_of_txs": 1,
+        "ctrl_sum": 1000.0,
+        "initg_pty_name": "Test Name",
+        "initg_pty_org_id": "Test Org ID",
+        "pmt_inf_id": "PMT001",
+        "pmt_mtd": "TRF",
+        "svc_lvl": "SEPA",
+        "reqd_exctn_dt": "2024-09-03",
+        "dbtr_name": "Debtor Name",
+        "dbtr_acct_iban": "US12345678901234567890123456",
+        "dbtr_acct_currency": "USD",
+        "dbtr_agt_bicfi": "BANKUS33XXX"
+    },
+    "transaction": {
+        "end_to_end_id": "E2E123",
+        "instd_amt": 1000.0,
+        "instd_amt_currency": "USD",
+        "xchg_rate_inf_unit_ccy": "USD",
+        "xchg_rate_inf_xchg_rate": 1.0,
+        "cdtr_agt_bicfi": "BANKUS33XXX",
+        "cdtr_acct_iban": "US12345678901234567890123456"
+    }
+}

@@ -48,16 +48,16 @@ describe("SEP Converter", () => {
         },
       ],
     };
-  
+
     const sep31Object = castSEP31(mockMessageHead, noExchangeRatePaymentInfo);
     expect(sep31Object.transactions[0].exchange_rate).toBeUndefined();
     expect(sep31Object.transactions[0].amount).toBe("2000.00");
     expect(sep31Object.transactions[0].currency).toBe("GBP");
     expect(sep31Object.transactions[0].receiver.iban).toBe(
-      "GB33BUKB20201555555555"
+      "GB33BUKB20201555555555",
     );
   });
-  
+
   test("should handle missing debtor information", () => {
     const missingDebtorInfo = {
       ...mockPaymentInfo,
@@ -65,7 +65,7 @@ describe("SEP Converter", () => {
       dbtrAcct: null, // Missing debtor account info
       dbtrAgt: null, // Missing debtor agent info
     };
-  
+
     const sep31Object = castSEP31(mockMessageHead, missingDebtorInfo);
     expect(sep31Object.sender).toEqual({
       name: undefined,
@@ -74,7 +74,7 @@ describe("SEP Converter", () => {
       bic: undefined,
     });
   });
-  
+
   test("should handle missing creditor account IBAN", () => {
     const missingCreditorIBAN = {
       ...mockPaymentInfo,
@@ -88,23 +88,23 @@ describe("SEP Converter", () => {
         },
       ],
     };
-  
+
     const sep31Object = castSEP31(mockMessageHead, missingCreditorIBAN);
     expect(sep31Object.transactions[0].receiver.iban).toBeNull();
     expect(sep31Object.transactions[0].amount).toBe("1500.00");
     expect(sep31Object.transactions[0].currency).toBe("JPY");
   });
-  
+
   test("should handle empty transactions array", () => {
     const emptyTransactions = {
       ...mockPaymentInfo,
       transactions: [], // No transactions
     };
-  
+
     const sep31Object = castSEP31(mockMessageHead, emptyTransactions);
     expect(sep31Object.transactions.length).toBe(0);
   });
-  
+
   test("should correctly handle control sum mismatch", () => {
     const controlSumMismatch = {
       ...mockPaymentInfo,
@@ -119,7 +119,7 @@ describe("SEP Converter", () => {
         },
       ],
     };
-  
+
     const sep31Object = castSEP31(mockMessageHead, controlSumMismatch);
     expect(sep31Object.control_sum).toBe("1000.00"); // Matches transaction total, not provided control sum
   });

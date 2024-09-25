@@ -20,7 +20,7 @@ app.use(
     xmlParseOptions: {
       explicitArray: false, // @dev Avoid wrapping single elements in arrays
     },
-  })
+  }),
 );
 
 // @dev Import and use message-related routes

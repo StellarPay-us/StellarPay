@@ -9,19 +9,20 @@ This project provides a library for validating and parsing ISO20022 payment init
 - **Error Handling**: Detailed error reporting for missing elements and validation failures.
 
 ## Usage
+
 ### XML Validation
 
 You can validate an XML file against an XSD schema using the `validateXML` function.
 
 ```js
-const { validateXML } = require('path-to-library');
+const { validateXML } = require("path-to-library");
 
 // Load XML and XSD content
-const xmlContent = fs.readFileSync('path/to/xmlfile.xml', 'utf8');
-const xsdContent = fs.readFileSync('path/to/schema.xsd', 'utf8');
+const xmlContent = fs.readFileSync("path/to/xmlfile.xml", "utf8");
+const xsdContent = fs.readFileSync("path/to/schema.xsd", "utf8");
 
 // Validate XML
-validateXML(xmlContent, xsdContent).then((result) => {
+validateXML(xmlContent, xsdContent).then(result => {
   if (result.valid) {
     console.log("XML is valid.");
   } else {
@@ -29,15 +30,16 @@ validateXML(xmlContent, xsdContent).then((result) => {
   }
 });
 ```
+
 ### XML Parsing
 
 You can parse the XML file and extract transaction data using the `parseXML` function.
 
 ```js
-const { parseXML } = require('path-to-library');
+const { parseXML } = require("path-to-library");
 
 // Load and parse XML content
-const xmlContent = fs.readFileSync('path/to/xmlfile.xml', 'utf8');
+const xmlContent = fs.readFileSync("path/to/xmlfile.xml", "utf8");
 const result = parseXML(xmlContent);
 
 // Access parsed data
@@ -47,7 +49,7 @@ console.log(result.transactions);
 
 ## Running Tests
 
-To run tests for validation and parsing, make sure to have the appropriate test files available. 
+To run tests for validation and parsing, make sure to have the appropriate test files available.
 Run the following command:
 
 ```bash

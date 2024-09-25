@@ -9,12 +9,13 @@ This project provides a library to convert ISO20022 payment messages (pain.001) 
 - **Customizable Asset Issuer**: Default asset issuer set to "Stellar", but can be customized.
 
 ## Usage
+
 ### Converting ISO20022 to SEP-31
 
 To convert an ISO20022 message to SEP-31 format, use the `castSEP31` function. Below is an example:
 
 ```js
-const { castSEP31 } = require('./src/index');
+const { castSEP31 } = require("./src/index");
 
 const messageHead = {
   groupHeader: {
@@ -87,7 +88,7 @@ The output of the `castSEP31` function will be in the following format:
 
 ## Running Tests
 
-To run tests for validation and parsing, make sure to have the appropriate test files available. 
+To run tests for validation and parsing, make sure to have the appropriate test files available.
 Run the following command:
 
 ```bash
