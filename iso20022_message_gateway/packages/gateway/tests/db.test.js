@@ -123,6 +123,6 @@ describe("Test Gateway Database", () => {
           });
         });
       });
-    })    
+    });
   });
 });

@@ -1,37 +1,47 @@
 const express = require("express");
-const bodyParser = require("body-parser");
-const bodyParserXml = require("body-parser-xml");
 const cors = require("cors");
-
 const app = express();
+const xml2js = require("xml2js");
 
-// @dev Initialize body-parser-xml to add XML parsing capabilities to body-parser
-bodyParserXml(bodyParser);
+const messageRoutes = require("./routes/messages");
 
 // Middleware
-app.use(cors()); // @dev Enable CORS to allow cross-origin requests
-app.use(bodyParser.json()); // @dev Parse JSON request bodies
-app.use(bodyParser.urlencoded({ extended: true })); // @dev Parse URL-encoded data
+app.use(cors());
+app.use(express.json());
+app.use((req, res, next) => {
+  if (req.is("application/xml")) {
+    let data = "";
+    req.setEncoding("utf8");
+    req.on("data", chunk => {
+      data += chunk;
+    });
 
-// @dev Add XML parsing middleware with a 1MB request size limit
-app.use(
-  bodyParser.xml({
-    limit: "1MB", // @dev Limit the size of incoming XML payloads to 1MB
-    xmlParseOptions: {
-      explicitArray: false, // @dev Avoid wrapping single elements in arrays
-    },
-  }),
-);
+    req.on("end", () => {
+      const parser = new xml2js.Parser({
+        explicitArray: false,
+        trim: true,
+        normalize: false,
+      });
 
-// @dev Import and use message-related routes
-const messageRoutes = require("./routes/messages");
+      parser.parseString(data, (err, result) => {
+        if (err) {
+          return next(err);
+        }
+        req.body = result;
+        next();
+      });
+    });
+  } else {
+    next();
+  }
+});
+
 app.use("/messages", messageRoutes);
 
-// @dev Global error handler middleware for logging errors and sending a 500 response
 app.use((err, req, res, next) => {
-  console.error(`Error: ${err.stack}`); // @dev Log error stack trace
-  res.status(500).send("Something went wrong!"); // @dev Send generic error response
+  console.error(`Error: ${err.stack}`);
+  res.status(500).send("Something went wrong!");
   next();
 });
 
-module.exports = app; // @dev Export the Express app for use in other modules
+module.exports = app;

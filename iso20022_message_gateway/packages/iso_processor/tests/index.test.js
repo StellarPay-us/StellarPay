@@ -17,6 +17,7 @@ describe("XML Processor Library", () => {
 
     const data = fs.readFileSync(xmlPath);
     const xsdContent = fs.readFileSync(xsdPath);
+    console.log(data.toString());
     const result = await validateXML(data.toString(), xsdContent);
 
     expect(result.valid).toBe(true);

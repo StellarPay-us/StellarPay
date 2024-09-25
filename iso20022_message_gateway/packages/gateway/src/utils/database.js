@@ -1,15 +1,19 @@
 const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database(":memory:");
+
+let dbInstance = null;
 
 const connectDB = DB_PATH => {
   const dbPath = DB_PATH || ":memory:";
-  return new sqlite3.Database(dbPath, err => {
-    if (err) {
-      console.error(`Error connecting to SQLite database: ${err.message}`);
-    } else {
-      console.log("Successfully connected to the SQLite database.");
-    }
-  });
+  if (!dbInstance) {
+    dbInstance = new sqlite3.Database(dbPath, err => {
+      if (err) {
+        console.error(`Error connecting to SQLite database: ${err.message}`);
+      } else {
+        console.log("Successfully connected to the SQLite database.");
+      }
+    });
+  }
+  return dbInstance;
 };
 
 const initializeDB = db => {
@@ -93,4 +97,10 @@ const initializeDB = db => {
 module.exports = {
   connectDB,
   initializeDB,
+  getInstance: () => {
+    if (!dbInstance) {
+      throw new Error("Database not initialized yet");
+    }
+    return dbInstance;
+  },
 };

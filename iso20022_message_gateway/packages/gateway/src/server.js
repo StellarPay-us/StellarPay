@@ -1,11 +1,24 @@
 const { logQueueStatus } = require("./utils/queueProcessor");
+const { connectDB, initializeDB } = require("./utils/database");
 const app = require("./app");
 const port = 3010;
 
-// @dev Start the server and begin listening on the specified port
-app.listen(port, () => {
+const db = connectDB();
+initializeDB(db);
+
+let intervalId;
+
+const server = app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 
-  // @dev Set up a recurring task to log the queue status every second (1000ms)
-  setInterval(logQueueStatus, 1000);
+  intervalId = setInterval(() => logQueueStatus(db), 10000);
 });
+
+const closeServer = () => {
+  clearInterval(intervalId);
+  return new Promise(resolve => {
+    server.close(resolve);
+  });
+};
+
+module.exports = { app, server, closeServer };
