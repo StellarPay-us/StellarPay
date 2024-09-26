@@ -1,57 +1,44 @@
 /**
- * Transforms the provided message head and payment information into a SEP-31 formatted object.
+ * Transforms the provided message head and payment information into a SEP-31 compliant formatted object.
  *
- * @param {Object} messageHead - The message header containing group header details.
- * @param {Object} paymentInfo - The payment information including debtor and transaction details.
+ * @param {Object} message - The message containing the transaction details.
  * @returns {Object} - Returns a SEP-31 compliant object with transaction details.
  */
-function castSEP31(messageHead, paymentInfo) {
-  const groupHeader = messageHead.groupHeader;
-
-  // Create the SEP-31 object with required fields from groupHeader and paymentInfo
+function castSEP31(message) {
   const sep31Object = {
-    msg_id: groupHeader.msgId, // Message ID from group header (GrpHdr)
-    creation_date: groupHeader.creDtTm, // Creation Date Time from group header (GrpHdr)
-    num_of_transactions: groupHeader.nbOfTxs, // Number of Transactions from group header (GrpHdr)
-    control_sum: groupHeader.ctrlSum, // Control Sum from group header (GrpHdr)
+    msg_id: message.msg_id,
+    creation_date: message.cre_dt_tm,
+    num_of_transactions: message.nb_of_txs,
+    control_sum: message.ctrl_sum,
 
     sender: {
-      name: paymentInfo.dbtr?.name, // Sender name from Debtor (Dbtr)
-      iban: paymentInfo.dbtrAcct?.iban, // Sender IBAN from Debtor Account (DbtrAcct)
-      currency: paymentInfo.dbtrAcct?.currency, // Sender currency from Debtor Account (DbtrAcct)
-      bic: paymentInfo.dbtrAgt?.bicfi, // Sender BIC from Debtor Agent (DbtrAgt)
+      name: message.dbtr_name,
+      iban: message.dbtr_acct_iban,
+      currency: message.dbtr_acct_currency,
+      bic: message.dbtr_agt_bicfi,
     },
-    transactions: [], // Array to hold transactions
+    transactions: [],
   };
 
-  // Loop through transactions in paymentInfo and map each transaction to SEP-31 format
-  for (let i = 0; i < paymentInfo.transactions.length; i++) {
-    const tx = paymentInfo.transactions[i];
-
-    // Construct each SEP-31 transaction object
-    const sep31Transaction = {
-      transaction_id: tx.endToEndId, // Transaction ID (End-to-End ID) from PmtId
-      amount: tx.instdAmt.amount, // Transaction amount from Instructed Amount (InstdAmt)
-      currency: tx.instdAmt.currency, // Transaction currency from Instructed Amount (InstdAmt)
-      exchange_rate: tx.xchgRateInf?.xchgRate, // Exchange rate from Exchange Rate Info (XchgRateInf)
-
-      sender_bic: paymentInfo.dbtrAgt?.bicfi, // Sender BIC from Debtor Agent (DbtrAgt)
+  for (const tx of message.transactions) {
+    const transaction = {
+      transaction_id: tx.end_to_end_id,
+      amount: tx.instd_amt,
+      currency: tx.instd_amt_currency,
+      exchange_rate: tx.xchg_rate_inf_xchg_rate,
 
       receiver: {
-        name: tx.cdtrAcct.iban, // Receiver name not present, fallback to IBAN
-        bic: tx.cdtrAgt.bicfi, // Receiver BIC from Creditor Agent (CdtrAgt)
-        iban: tx.cdtrAcct.iban, // Receiver IBAN from Creditor Account (CdtrAcct)
+        bic: tx.cdtr_agt_bicfi,
+        iban: tx.cdtr_acct_iban,
       },
-      receiver_bic: tx.cdtrAgt.bicfi, // Receiver BIC from Creditor Agent (CdtrAgt)
 
       asset: {
-        code: tx.instdAmt.currency, // Asset code maps to transaction currency
-        issuer: "Stellar", // Default asset issuer placeholder (can be customized)
+        code: tx.instd_amt_currency,
+        issuer: "Stellar", // Default asset issuer placeholder
       },
     };
 
-    // Add the constructed transaction to the SEP-31 object's transactions array
-    sep31Object.transactions.push(sep31Transaction);
+    sep31Object.transactions.push(transaction);
   }
 
   return sep31Object;

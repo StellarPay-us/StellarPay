@@ -15,7 +15,7 @@ This is a payment gateway for processing and validating ISO 20022 XML messages, 
 To start the server:
 
 ```bash
-pnpm start
+pnpm run dev
 ```
 
 The server will start at `http://localhost:3010`.
@@ -40,8 +40,8 @@ Example Request:
 
 ```bash
 curl -X POST http://localhost:3010/messages \
-     -H "Content-Type: application/xml" \
-     -d @path/to/message.xml
+  -H "Content-Type: application/xml" \
+  --data-binary @../../../resources/files/messages/pain.001.001.12.xm
 ```
 
 ## Database Schema

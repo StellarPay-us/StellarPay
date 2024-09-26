@@ -11,7 +11,13 @@ let intervalId;
 const server = app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 
-  intervalId = setInterval(() => logQueueStatus(db), 10000);
+  intervalId = setInterval(async () => {
+    try {
+      await logQueueStatus(db);
+    } catch (error) {
+      console.error("Error logging queue status:", error);
+    }
+  }, 5000);
 });
 
 const closeServer = () => {
