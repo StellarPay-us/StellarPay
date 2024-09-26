@@ -2,7 +2,7 @@
  * Fetches messages from the `queue`.
  */
 function logQueueStatus(db) {
-  const timestamp = new Date().toISOString(); // Get current timestamp for logging
+  const timestamp = new Date().toISOString(); 
   console.log(`[${timestamp}] Checking queue...`);
 
   db.all("SELECT * FROM queue", [], (err, rows) => {
