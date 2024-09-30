@@ -46,6 +46,107 @@
           </v-card-actions>
         </v-card>
       </v-col>
+      <v-col>
+        <v-card>
+          <v-card-title> Upload CSV {{ showDatePicker }} </v-card-title>
+          <v-card-actions>
+            <v-container>
+              <v-row>
+                <v-text-field v-model="name" label="Enter Name" />
+              </v-row>
+              <v-row>
+                <v-text-field v-model="messageId" label="Enter Message ID" />
+              </v-row>
+              <v-row>
+                <v-text-field
+                  type="number"
+                  v-model="numberOfTx"
+                  label="Number of transactions"
+                />
+              </v-row>
+              <v-row>
+                <v-text-field
+                  type="number"
+                  v-model="controlSum"
+                  label="Control Sum"
+                />
+              </v-row>
+              <v-row>
+                <v-select
+                  v-model="pmtMtd"
+                  :items="pmtMtdOptions"
+                  label="Select a payment method"
+                />
+              </v-row>
+              <v-row>
+                <v-btn @click="showDatePicker = !showDatePicker">
+                  {{
+                    parsedDate.length > 0 ? parsedDate : 'Select Execution Date'
+                  }}
+                </v-btn>
+              </v-row>
+              <v-row v-if="showDatePicker">
+                <v-date-picker v-model="selectedDate" no-title scrollable />
+              </v-row>
+              <v-row>
+                <v-file-input
+                  label="Upload CSV"
+                  accept=".csv"
+                  @change="handleFileChange"
+                />
+              </v-row>
+            </v-container>
+          </v-card-actions>
+        </v-card>
+      </v-col>
     </v-row>
   </v-container>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      name: '',
+      messageId: '',
+      numberOfTx: 0,
+      controlSum: 0,
+      initgPtyOrgId: '123456',
+      pmtInfId: 'X-BA-PAY002',
+      pmtMtd: '',
+      pmtMtdOptions: ['TRF'],
+      selectedDate: null,
+      showDatePicker: false,
+    }
+  },
+  computed: {
+    parsedDate() {
+      if (!this.selectedDate) {
+        return ''
+      }
+
+      const date = new Date(this.selectedDate)
+
+      const pad = (num) => (num < 10 ? '0' + num : num)
+
+      const year = date.getFullYear()
+      const month = pad(date.getMonth() + 1)
+      const day = pad(date.getDate())
+
+      return `${year}-${month}-${day}`
+    },
+  },
+  methods: {
+    handleDateChange(date) {
+      this.selectedDate = date
+    },
+    handleFileChange: (event) => {
+      const input = event.target
+      if (input.files && input.files[0]) {
+        const file = input.files[0]
+        useCSVHandler(file)
+      }
+    },
+  },
+}
+</script>
