@@ -85,7 +85,6 @@ describe("Test Gateway Database", () => {
                   expect(err).toBeNull();
                   expect(rows.length).toBe(1);
                   expect(rows[0].msg_id).toBe("123456");
-                  expect(rows[0].ready_to_forward).toBe(0);
                   db.all("SELECT * FROM messages", [], (err, rows) => {
                     expect(err).toBeNull();
                     expect(rows.length).toBe(1);

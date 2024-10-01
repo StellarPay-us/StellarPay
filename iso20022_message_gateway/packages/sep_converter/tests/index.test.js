@@ -17,7 +17,6 @@ describe("SEP Converter", () => {
     dbtr_acct_iban: "US33XXX1234567890123456789012",
     dbtr_acct_currency: "USD",
     dbtr_agt_bicfi: "BANKUS22",
-    ready_to_forward: 0,
     transactions: [
       {
         id: 1,

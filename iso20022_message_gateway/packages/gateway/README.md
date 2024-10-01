@@ -50,7 +50,6 @@ The project uses a simple SQLite schema with three tables:
 
 - messages: Stores message metadata (e.g., `msg_id?`, `cre_dt_tm`, `ctrl_sum`).
 - transactions: Stores transactions related to messages.
-- queue: Tracks message queue status (`ready_to_forward` flag).
 
 ## Running Tests
 

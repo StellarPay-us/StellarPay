@@ -27,8 +27,7 @@ const initializeDB = db => {
   db.run(
     `CREATE TABLE IF NOT EXISTS queue (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        msg_id TEXT UNIQUE NOT NULL,
-        ready_to_forward INTEGER DEFAULT 0
+        msg_id TEXT UNIQUE NOT NULL
     )`,
     err => {
       if (err) {

@@ -52,7 +52,7 @@ async function logQueueStatus(db) {
 
 const getMessageWithTransactions = (db, msg_id, callback) => {
   const messageQuery = `
-    SELECT m.*, q.ready_to_forward 
+    SELECT m.* 
     FROM messages m 
     JOIN queue q ON m.queue_id = q.id 
     WHERE m.msg_id = ?`;
@@ -92,7 +92,6 @@ const getMessageWithTransactions = (db, msg_id, callback) => {
         dbtr_acct_iban: message.dbtr_acct_iban,
         dbtr_acct_currency: message.dbtr_acct_currency,
         dbtr_agt_bicfi: message.dbtr_agt_bicfi,
-        ready_to_forward: message.ready_to_forward,
         transactions: transactions.map(tx => ({
           id: tx.id,
           end_to_end_id: tx.end_to_end_id,
