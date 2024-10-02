@@ -20,6 +20,7 @@ exports.receiveMessage = async (req, res) => {
       standalone: undefined,
     },
   });
+
   const xmlContent = builder.buildObject(req.body);
 
   try {

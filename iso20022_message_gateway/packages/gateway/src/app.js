@@ -4,6 +4,7 @@ const app = express();
 const xml2js = require("xml2js");
 
 const messageRoutes = require("./routes/messages");
+const { convertJSONToXML } = require("./utils/jsonToXML");
 
 // Middleware
 app.use(cors());
@@ -31,6 +32,26 @@ app.use((req, res, next) => {
         next();
       });
     });
+  } else if (req.is("application/json")) {
+    try {
+      const data = convertJSONToXML(req.body);
+
+      const parser = new xml2js.Parser({
+        explicitArray: false,
+        trim: true,
+        normalize: false,
+      });
+
+      parser.parseString(data, (err, result) => {
+        if (err) {
+          return next(err);
+        }
+        req.body = result;
+        next();
+      });
+    } catch (error) {
+      return next(new SyntaxError(error.message));
+    }
   } else {
     next();
   }
@@ -39,9 +60,15 @@ app.use((req, res, next) => {
 app.use("/messages", messageRoutes);
 
 app.use((err, req, res, next) => {
-  console.error(`Error: ${err.stack}`);
+  if (err instanceof SyntaxError) {
+    return res.status(400).json({
+      message: `Invalid JSON or XML format: ${err.message}`,
+    });
+  }
+
   res.status(500).send("Something went wrong!");
-  next();
+
+  next(err);
 });
 
 module.exports = app;

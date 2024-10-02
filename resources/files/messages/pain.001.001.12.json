@@ -1,0 +1,38 @@
+{
+    "message": {
+        "msg_id": "S-BU-002",
+        "cre_dt_tm": "2024-05-04T12:38:00Z",
+        "nb_of_txs": 2,
+        "ctrl_sum": 2000.0,
+        "initg_pty_name": "John Doe",
+        "initg_pty_org_id": "123456",
+        "pmt_inf_id": "X-BA-PAY003",
+        "pmt_mtd": "TRF",
+        "svc_lvl": "NORM",
+        "reqd_exctn_dt": "2024-05-04",
+        "dbtr_name": "John Doe",
+        "dbtr_acct_iban": "US33XXX1234567890123456789013",
+        "dbtr_acct_currency": "USD",
+        "dbtr_agt_bicfi": "BANKUS22"
+    },
+    "transactions": [
+        {
+            "end_to_end_id": "batch001",
+            "instd_amt": 1000.0,
+            "instd_amt_currency": "USD",
+            "xchg_rate_inf_unit_ccy": "EUR",
+            "xchg_rate_inf_xchg_rate": 0.90,
+            "cdtr_agt_bicfi": "BANKEU11",
+            "cdtr_acct_iban": "DE89370400440532013000"
+        },
+        {
+            "end_to_end_id": "batch002",
+            "instd_amt": 1000.0,
+            "instd_amt_currency": "USD",
+            "xchg_rate_inf_unit_ccy": "GBP",
+            "xchg_rate_inf_xchg_rate": 0.77,
+            "cdtr_agt_bicfi": "BANKGB22",
+            "cdtr_acct_iban": "GB29NWBK60161331926819"
+        }
+    ]
+}
