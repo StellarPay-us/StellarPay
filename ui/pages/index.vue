@@ -7,13 +7,6 @@
       <v-card-title class="text-h5 font-weight-bold">Login</v-card-title>
       <v-card-text>
         <v-form>
-          <v-select
-            v-model="role"
-            :items="roles"
-            label="Login as"
-            required
-          ></v-select>
-
           <v-text-field
             v-model="email"
             label="Email"
@@ -40,20 +33,19 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import store from '../store';
 
 const email = ref('')
 const password = ref('')
-const role = ref('')
-
-const roles = ['Sender', 'Receiver']
 
 const router = useRouter()
 
 function login() {
-  if (role.value === 'Sender') {
-    router.push('/sender-dashboard')
-  } else if (role.value === 'Receiver') {
-    router.push('/receiver-dashboard')
-  }
+  store.setUser({
+    email: email,
+    accounts: [],
+    messages: []
+  });
+  router.push('/sender-dashboard')
 }
 </script>

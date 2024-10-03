@@ -103,6 +103,13 @@
   </v-container>
 </template>
 
+<script setup>
+definePageMeta({
+  middleware: 'is-logged-in' 
+});
+</script>
+
+
 <script>
 export default {
   data() {

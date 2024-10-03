@@ -1,3 +1,3 @@
-transaction_id,end_to_end_id,instd_amt,instd_amt_currency,xchg_rate_inf_unit_ccy,xchg_rate_inf_xchg_rate,cdtr_agt_bicfi,cdtr_acct_iban
-1,batch001,1000,USD,EUR,0.9,BANKEU11,DE89370400440532013000
-2,batch002,1000,USD,GBP,0.77,BANKGB22,GB29NWBK60161331926819
+end_to_end_id,instd_amt,instd_amt_currency,xchg_rate_inf_unit_ccy,xchg_rate_inf_xchg_rate,cdtr_agt_bicfi,cdtr_acct_iban
+batch001,1000,USD,EUR,0.9,BANKEU11,DE89370400440532013000
+batch002,1000,USD,GBP,0.77,BANKGB22,GB29NWBK60161331926819
