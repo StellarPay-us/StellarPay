@@ -103,14 +103,10 @@
   </v-container>
 </template>
 
-<script setup>
-definePageMeta({
-  middleware: 'is-logged-in' 
-});
-</script>
-
 
 <script>
+import store from '../store';
+
 export default {
   data() {
     return {
@@ -124,6 +120,11 @@ export default {
       pmtMtdOptions: ['TRF'],
       selectedDate: null,
       showDatePicker: false,
+    }
+  },
+  beforeMount() {
+    if (Object.keys(store.user.value).length === 0) {
+      return navigateTo('/');
     }
   },
   computed: {
