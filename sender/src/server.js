@@ -8,7 +8,7 @@ let intervalId;
 
 const server = app.listen(port, async () => {
   console.log(`Server listening at http://localhost:${port}`);
-  
+
   try {
     const pair = StellarSdk.Keypair.random();
     const publicKey = pair.publicKey();
@@ -18,7 +18,7 @@ const server = app.listen(port, async () => {
     console.log("Secret Key:", secretKey);
 
     const friendbotUrl = `https://friendbot.stellar.org?addr=${publicKey}`;
-    
+
     console.log("Requesting testnet lumens...");
     const response = await axios.get(friendbotUrl);
 
@@ -28,7 +28,6 @@ const server = app.listen(port, async () => {
     } else {
       console.error("Failed to fund testnet lumens.");
     }
-
   } catch (error) {
     console.error("Error setting up Stellar wallet:", error);
   }
