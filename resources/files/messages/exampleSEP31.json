@@ -1,0 +1,42 @@
+{
+  "msg_id": "S-BU-001",
+  "creation_date": "2024-05-04T12:38:00",
+  "num_of_transactions": 2,
+  "control_sum": 2000,
+  "sender": {
+    "name": "Max Musterman",
+    "iban": "US33XXX1234567890123456789012",
+    "currency": "USD",
+    "bic": "BANKUS22"
+  },
+  "transactions": [
+    {
+      "transaction_id": "batch001",
+      "amount": 1000,
+      "currency": "USD",
+      "exchange_rate": 0.9,
+      "receiver": {
+          "bic": "BANKEU11",
+          "iban": "DE89370400440532013000"
+      },
+      "asset": {
+        "code": "EUR",
+        "issuer": "Stellar"
+      }
+    },
+    {
+      "transaction_id": "batch002",
+      "amount": 1000,
+      "currency": "USD",
+      "exchange_rate": 0.77,
+      "receiver": {
+        "bic": "BANKGB22",
+        "iban": "GB29NWBK60161331926819"
+      },
+      "asset": {
+        "code": "GBP",
+        "issuer": "Stellar"
+      }
+    }
+  ]
+}
