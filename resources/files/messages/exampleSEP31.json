@@ -16,8 +16,8 @@
       "currency": "USD",
       "exchange_rate": 0.9,
       "receiver": {
-          "bic": "BANKEU11",
-          "iban": "DE89370400440532013000"
+        "bic": "BANKEU11",
+        "iban": "DE89370400440532013000"
       },
       "asset": {
         "code": "EUR",
