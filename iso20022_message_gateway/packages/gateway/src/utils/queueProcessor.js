@@ -40,6 +40,9 @@ async function logQueueStatus(db) {
                   },
                 );
               }
+              /**
+               * @TODO improve error handling if the response is not positive
+               */
             },
           );
         } catch (error) {
