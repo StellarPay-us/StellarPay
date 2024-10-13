@@ -1,22 +1,34 @@
 # Sender
 
-The sender application for the Stellar Testnet PoC (Proof of Conecpt).
+The `Sender` application is a component of the Stellar Testnet Proof of Concept (PoC) focusing on cross-border microtransactions using the Stellar network.
 
-# Key Features
-- Adjusted SEP-31 Endpoint: Utilizes a modified SEP-31 protocol tailored for microtransactions.
-- Funding Wallet: Manages the Sender's wallet containing Stellar native assets for transactions.
-- Payment Information: Enables efficient processing of cross-border payments using the Stellar network.
+## Key Features
+- **Modified SEP-31 Endpoint**: Implements a custom version of the SEP-31 protocol optimized for microtransactions.
+- **Funding Wallet**: Manages Stellar native assets within the sender's wallet for processing transactions.
+- **Payment Information Processing**: Facilitates efficient cross-border payment operations via the Stellar network.
 
-# Setup
+## Installation
+
+To install dependencies, run the following command:
+
 ```bash
 pnpm install
 ```
 
-# Start Server
+## Running the Server
+To start the development server:
 ```bash
 pnpm dev
 ```
 
+Alternatively, to run the production server:
+```bash
+pnpm start
+```
+
+## Example Object
+This is an example of the object used in disbursement creation and transactions:
+```js
 exampleObject: {
   msg_id: string;
   creation_date: DATE;
@@ -43,10 +55,23 @@ exampleObject: {
     };
   }[];
 }
+```
 
+## Disbursement Creation
+This is the structure for creating a disbursement:
+```js
 createDisbursement: {
-  name: string
-  wallet_id: string
-  asset_id: string
-  country_code: string // Three-character ISO 3166 code
+  name: string;
+  wallet_id: string;
+  asset_id: string;
+  country_code: string; // Three-character ISO 3166 code
 }
+```
+
+## Scripts
+- Run Tests: `pnpm test`
+- Start Server: `pnpm start`
+- Development Mode: `pnpm dev`
+- Linting: `pnpm lint`
+- Code Formatting: `pnpm format`
+
