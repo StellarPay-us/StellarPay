@@ -1,10 +1,13 @@
 const { parseTransaction } = require("../utils/sep31Parser");
-const { getExchangePricesAndCostsForPathPayment, buildTransaction, signAndSubmitTx } = require("../utils/pathPayment");
+const {
+  getExchangePricesAndCostsForPathPayment,
+  buildTransaction,
+  signAndSubmitTx,
+} = require("../utils/pathPayment");
 const StellarSdk = require("@stellar/stellar-sdk");
 const axios = require("axios");
 
 exports.receiveTransaction = async (req, res) => {
-
   try {
     const keypair = StellarSdk.Keypair.random();
     const publicKey = pair.publicKey();
@@ -29,21 +32,26 @@ exports.receiveTransaction = async (req, res) => {
 
     // Setting up assets
     const sourceAsset = {
-      code: 'native',
-      issuer: ''
+      code: "native",
+      issuer: "",
     };
-    const serverUrl = 'https://horizon-testnet.stellar.org';
+    const serverUrl = "https://horizon-testnet.stellar.org";
 
-    for(const transaction of message.transactions) {
+    for (const transaction of message.transactions) {
       const destinationAsset = {
         code: message.sender.currency,
-        issuer: 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5'
+        issuer: "GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5",
       };
       // Check path payment rate
-      const rate = await getExchangePricesAndCostsForPathPayment(sourceAsset, transaction.amount.toString(), destinationAsset, serverUrl);
-      
+      const rate = await getExchangePricesAndCostsForPathPayment(
+        sourceAsset,
+        transaction.amount.toString(),
+        destinationAsset,
+        serverUrl,
+      );
+
       /**@TODO Find the exchange rate clostest to the expected exchange rate */
-      
+
       // Build transaction
       const tx = await buildTransaction(
         keypair,
@@ -51,7 +59,7 @@ exports.receiveTransaction = async (req, res) => {
         transaction.amount,
         destinationAsset,
         rate[0].destinationAmount,
-        serverUrl
+        serverUrl,
       );
 
       // Sign and submit the transaction
@@ -67,7 +75,9 @@ exports.receiveTransaction = async (req, res) => {
       /**@TODO Post parsedResult.csvFile to kickstart the disbursement */
     }
 
-    res.status(201).send(`Transaction received and processed: ${JSON.stringify(req.body)}`);
+    res
+      .status(201)
+      .send(`Transaction received and processed: ${JSON.stringify(req.body)}`);
   } catch (error) {
     /**
      * @TODO improve error handling for the sender and gateway
