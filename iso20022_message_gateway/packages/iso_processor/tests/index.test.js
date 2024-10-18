@@ -2,7 +2,7 @@ const { validateXML, parseXML } = require("../src/index");
 const fs = require("fs");
 const path = require("path");
 
-describe("XML Processor Library", () => {
+describe("XML Processor Library - validateXML", () => {
   test("validateXML should return valid for a correct XML file", async () => {
     const xmlPath = path.join(
       __dirname,
@@ -21,7 +21,44 @@ describe("XML Processor Library", () => {
     const result = await validateXML(data.toString(), xsdContent);
 
     expect(result.valid).toBe(true);
+  });
+
+  test("validateXML should return no errors for a correct XML file", async () => {
+    const xmlPath = path.join(
+      __dirname,
+      "../../../../resources/files/messages",
+      "pain.001.001.12.xml",
+    );
+    const xsdPath = path.join(
+      __dirname,
+      "../../../../resources/files/definitions",
+      "pain.001.001.12.xsd",
+    );
+
+    const data = fs.readFileSync(xmlPath);
+    const xsdContent = fs.readFileSync(xsdPath);
+    const result = await validateXML(data.toString(), xsdContent);
+
     expect(result.errors.length).toBe(0);
+  });
+
+  test("validateXML should return invalid for an incorrect XML file", async () => {
+    const xmlPath = path.join(
+      __dirname,
+      "../../../../resources/files/messages",
+      "errorMessage.xml",
+    );
+    const xsdPath = path.join(
+      __dirname,
+      "../../../../resources/files/definitions",
+      "pain.001.001.12.xsd",
+    );
+
+    const data = fs.readFileSync(xmlPath);
+    const xsdContent = fs.readFileSync(xsdPath);
+    const result = await validateXML(data.toString(), xsdContent);
+
+    expect(result.valid).toBe(false);
   });
 
   test("validateXML should return errors for an incorrect XML file", async () => {
@@ -40,11 +77,12 @@ describe("XML Processor Library", () => {
     const xsdContent = fs.readFileSync(xsdPath);
     const result = await validateXML(data.toString(), xsdContent);
 
-    expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
   });
+});
 
-  test("parseXML should correctly parse a valid XML message with all required elements", () => {
+describe("XML Processor Library - parseXML", () => {
+  test("parseXML should parse valid XML message with required elements", () => {
     const xmlPath = path.join(
       __dirname,
       "../../../../resources/files/messages",
@@ -54,8 +92,19 @@ describe("XML Processor Library", () => {
 
     const result = parseXML(data);
 
-    // Test the "message" object (combination of grpHeader and paymentInfo)
     expect(result).toHaveProperty("message");
+  });
+
+  test("parsed message should contain expected fields", () => {
+    const xmlPath = path.join(
+      __dirname,
+      "../../../../resources/files/messages",
+      "pain.001.001.12.xml",
+    );
+    const data = fs.readFileSync(xmlPath).toString();
+
+    const result = parseXML(data);
+
     expect(result.message).toHaveProperty("msgId");
     expect(result.message).toHaveProperty("creDtTm");
     expect(result.message).toHaveProperty("nbOfTxs");
@@ -70,10 +119,31 @@ describe("XML Processor Library", () => {
     expect(result.message.dbtrAcct).toHaveProperty("iban");
     expect(result.message.dbtrAcct).toHaveProperty("currency");
     expect(result.message.dbtrAgt).toHaveProperty("bicfi");
+  });
 
-    // Test the "transactions" array
+  test("parsed transactions array should exist and have correct structure", () => {
+    const xmlPath = path.join(
+      __dirname,
+      "../../../../resources/files/messages",
+      "pain.001.001.12.xml",
+    );
+    const data = fs.readFileSync(xmlPath).toString();
+
+    const result = parseXML(data);
+
     expect(result).toHaveProperty("transactions");
     expect(result.transactions.length).toBeGreaterThan(0);
+  });
+
+  test("parsed first transaction should contain expected fields", () => {
+    const xmlPath = path.join(
+      __dirname,
+      "../../../../resources/files/messages",
+      "pain.001.001.12.xml",
+    );
+    const data = fs.readFileSync(xmlPath).toString();
+
+    const result = parseXML(data);
 
     const firstTransaction = result.transactions[0];
     expect(firstTransaction).toHaveProperty("endToEndId");
@@ -89,7 +159,7 @@ describe("XML Processor Library", () => {
     expect(firstTransaction.cdtrAcct).toHaveProperty("iban");
   });
 
-  test("parseXML should throw an error if any required element or attribute is missing", () => {
+  test("parseXML should throw error for missing currency attribute in InstdAmt element", () => {
     const invalidXmlContent = `
       <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.12">
           <CstmrCdtTrfInitn>
@@ -159,7 +229,7 @@ describe("XML Processor Library", () => {
     );
   });
 
-  test("parseXML should throw an error if the XchgRateInf element is missing", () => {
+  test("parseXML should throw error for missing XchgRateInf element", () => {
     const invalidXmlContent = `
       <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.12">
           <CstmrCdtTrfInitn>
