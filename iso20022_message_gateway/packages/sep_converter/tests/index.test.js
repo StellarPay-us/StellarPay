@@ -41,9 +41,13 @@ describe("SEP Converter", () => {
     ],
   };
 
-  it("should correctly map message header fields", () => {
-    const result = castSEP31(message);
+  let result; // Declare result here for reuse in tests
 
+  beforeEach(() => {
+    result = castSEP31(message);
+  });
+
+  it("should correctly map message header fields", () => {
     expect(result.msg_id).toBe(message.msg_id);
     expect(result.creation_date).toBe(message.cre_dt_tm);
     expect(result.num_of_transactions).toBe(message.nb_of_txs);
@@ -51,8 +55,6 @@ describe("SEP Converter", () => {
   });
 
   it("should correctly map sender details", () => {
-    const result = castSEP31(message);
-
     expect(result.sender.name).toBe(message.dbtr_name);
     expect(result.sender.iban).toBe(message.dbtr_acct_iban);
     expect(result.sender.currency).toBe(message.dbtr_acct_currency);
@@ -60,26 +62,21 @@ describe("SEP Converter", () => {
   });
 
   it("should correctly map transactions", () => {
-    const result = castSEP31(message);
-
     expect(result.transactions.length).toBe(message.transactions.length);
 
     message.transactions.forEach((tx, index) => {
-      expect(result.transactions[index].transaction_id).toBe(tx.end_to_end_id);
-      expect(result.transactions[index].amount).toBe(tx.instd_amt);
-      expect(result.transactions[index].currency).toBe(tx.instd_amt_currency);
-      expect(result.transactions[index].exchange_rate).toBe(
-        tx.xchg_rate_inf_xchg_rate,
-      );
-      expect(result.transactions[index].receiver.bic).toBe(tx.cdtr_agt_bicfi);
-      expect(result.transactions[index].receiver.iban).toBe(tx.cdtr_acct_iban);
-      expect(result.transactions[index].asset.code).toBe(tx.instd_amt_currency);
+      const mappedTx = result.transactions[index];
+      expect(mappedTx.transaction_id).toBe(tx.end_to_end_id);
+      expect(mappedTx.amount).toBe(tx.instd_amt);
+      expect(mappedTx.currency).toBe(tx.instd_amt_currency);
+      expect(mappedTx.exchange_rate).toBe(tx.xchg_rate_inf_xchg_rate);
+      expect(mappedTx.receiver.bic).toBe(tx.cdtr_agt_bicfi);
+      expect(mappedTx.receiver.iban).toBe(tx.cdtr_acct_iban);
+      expect(mappedTx.asset.code).toBe(tx.instd_amt_currency);
     });
   });
 
   it("should default asset issuer to 'Stellar'", () => {
-    const result = castSEP31(message);
-
     result.transactions.forEach(tx => {
       expect(tx.asset.issuer).toBe("Stellar");
     });
